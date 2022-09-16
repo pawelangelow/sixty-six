@@ -1,3 +1,7 @@
+import { game } from './game';
+
+game();
+
 // https://bicyclecards.com/how-to-play/sixty-six/
 // Determine who's the dealer
 // Deal cards

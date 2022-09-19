@@ -68,10 +68,12 @@ export const createDeck = (): Card[] =>
   );
 
 export const shuttleDeck = (deck: Card[]) => {
-  for (let i = deck.length - 1; i > 0; i--) {
+  const result: Card[] = [...deck];
+
+  for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
+    [result[i], result[j]] = [result[j], result[i]];
   }
 
-  return deck;
+  return result;
 };

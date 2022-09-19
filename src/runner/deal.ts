@@ -1,9 +1,8 @@
-import { Card, shuttleDeck } from './deck';
+import { createDeck, shuttleDeck } from './deck';
 import { Player } from './player';
 import { calculateTrick } from './trick';
 
 export interface DealProps {
-  deck: Card[];
   playerA: Player;
   playerB: Player;
   firstToPlay: null | 'A' | 'B';
@@ -12,8 +11,8 @@ export interface DealProps {
 // TODO: this has to be random
 const getFirstPlayer = (a: Player, b: Player) => [a, b];
 
-export const deal = ({ deck, firstToPlay, playerA, playerB }: DealProps) => {
-  shuttleDeck(deck);
+export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
+  const deck = shuttleDeck(createDeck());
 
   let first: Player = firstToPlay === 'A' ? playerA : playerB;
   let second: Player = firstToPlay === 'A' ? playerB : playerA;

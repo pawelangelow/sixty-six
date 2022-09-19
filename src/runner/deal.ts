@@ -11,6 +11,40 @@ export interface DealProps {
 // TODO: this has to be random
 const getFirstPlayer = (a: Player, b: Player) => [a, b];
 
+const calculateDealPoints = (loser: Player): number => {
+  if (loser.points === 0 && !loser.hasWonTrick) {
+    return 3;
+  }
+
+  if (loser.points < 33) {
+    return 2;
+  }
+
+  return 1;
+};
+
+const WINNING_POINTS = 66;
+
+export const determineWinner = (
+  a: Player,
+  b: Player,
+): { winner: Player | null; points?: number } => {
+  // If neither player scores 66, or each has scored 66 or more without announcing it,
+  // no one scores in that hand and 1 game point is added to the score of the winner of the next hand.
+  if (
+    (a.points >= WINNING_POINTS && b.points >= WINNING_POINTS) ||
+    (a.points < WINNING_POINTS && b.points < WINNING_POINTS)
+  ) {
+    return { winner: null };
+  }
+
+  if (a.points >= WINNING_POINTS) {
+    return { winner: a, points: calculateDealPoints(b) };
+  }
+
+  return { winner: b, points: calculateDealPoints(a) };
+};
+
 export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const deck = shuttleDeck(createDeck());
 

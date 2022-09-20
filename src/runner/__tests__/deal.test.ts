@@ -168,8 +168,9 @@ describe('Deal', () => {
           points: 70,
         };
 
-        const { winner } = determineWinner(playerA, playerB);
+        const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toBeFalsy();
+        expect(points).toEqual(1);
       });
 
       it('should display no winner (nobody > 66)', () => {
@@ -184,8 +185,9 @@ describe('Deal', () => {
           points: 40,
         };
 
-        const { winner } = determineWinner(playerA, playerB);
+        const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toBeFalsy();
+        expect(points).toEqual(1);
       });
     });
   });

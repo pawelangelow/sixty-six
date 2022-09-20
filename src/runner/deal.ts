@@ -28,14 +28,14 @@ const WINNING_POINTS = 66;
 export const determineWinner = (
   a: Player,
   b: Player,
-): { winner: Player | null; points?: number } => {
+): { winner: Player | null; points: number } => {
   // If neither player scores 66, or each has scored 66 or more without announcing it,
   // no one scores in that hand and 1 game point is added to the score of the winner of the next hand.
   if (
     (a.points >= WINNING_POINTS && b.points >= WINNING_POINTS) ||
     (a.points < WINNING_POINTS && b.points < WINNING_POINTS)
   ) {
-    return { winner: null };
+    return { winner: null, points: 1 };
   }
 
   if (a.points >= WINNING_POINTS) {
@@ -101,6 +101,5 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   // Last trick gives +10 points to the winner
   first.points += 10;
 
-  console.log(`${playerA.name} points: ${playerA.points}`);
-  console.log(`${playerB.name} points: ${playerB.points}`);
+  return determineWinner(first, second);
 };

@@ -1,25 +1,42 @@
 import { deal } from './deal';
-import { Card } from './deck';
-import { createPlayer } from './player';
+import { Player } from './player';
 
-export const game = () => {
-  const playerA = createPlayer({
-    playTrick: (cards: Card[]) => {
-      console.log('Player A cards: ', cards.join(', '));
-      return cards[0];
-    },
-    name: 'player A',
-  });
+interface GameProps {
+  playerA: Player;
+  playerB: Player;
+}
+export interface GameResult {
+  winner: Player;
+}
 
-  const playerB = createPlayer({
-    playTrick: (cards: Card[]) => {
-      console.log('Player B cards: ', cards.join(', '));
-      return cards[0];
-    },
-    name: 'player B',
-  });
+export const game = ({ playerA, playerB }: GameProps): GameResult => {
+  let firstToPlay = null;
+  let pendingPoints = 0;
 
-  const firstToPlay = null;
+  while (playerA.gamePoints < 7 && playerB.gamePoints < 7) {
+    playerA.points = 0;
+    playerB.points = 0;
 
-  deal({ playerA, playerB, firstToPlay });
+    const { winner, points } = deal({ playerA, playerB, firstToPlay });
+
+    if (winner === playerA) {
+      playerA.gamePoints += points + pendingPoints;
+      pendingPoints = 0;
+      firstToPlay = 'A';
+    }
+
+    if (winner === playerB) {
+      playerB.gamePoints += points + pendingPoints;
+      pendingPoints = 0;
+      firstToPlay = 'B';
+    }
+
+    if (!winner) {
+      pendingPoints += points;
+    }
+  }
+
+  return {
+    winner: playerA.gamePoints > playerB.gamePoints ? playerA : playerB,
+  };
 };

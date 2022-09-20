@@ -1,6 +1,19 @@
+import { Card } from './deck';
 import { game } from './game';
+import { createPlayer } from './player';
 
-game();
+const playerA = createPlayer({
+  playTrick: (cards: Card[]) => cards[0],
+  name: 'player A',
+});
+
+const playerB = createPlayer({
+  playTrick: (cards: Card[]) => cards[0],
+  name: 'player B',
+});
+
+const { winner } = game({ playerA, playerB });
+console.log(winner.name);
 
 // https://bicyclecards.com/how-to-play/sixty-six/
 // Determine who's the dealer

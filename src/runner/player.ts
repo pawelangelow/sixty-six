@@ -8,6 +8,7 @@ export interface Player extends BotAPI {
   cards: Card[];
   points: number;
   hasWonTrick: boolean;
+  gamePoints: number;
 }
 
 export const createPlayer = (api: BotAPI) => ({
@@ -15,4 +16,5 @@ export const createPlayer = (api: BotAPI) => ({
   cards: [],
   points: 0,
   hasWonTrick: false,
+  gamePoints: 0,
 });

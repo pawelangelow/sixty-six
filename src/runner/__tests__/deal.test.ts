@@ -6,6 +6,7 @@ const commonProps = {
   hasWonTrick: false,
   playTrick: () => null,
   name: 'common',
+  gamePoints: 0,
 };
 
 describe('Deal', () => {

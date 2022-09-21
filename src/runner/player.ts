@@ -12,6 +12,7 @@ export type Annoucement =
 export interface Play {
   card: Card;
   announcements?: Annoucement[];
+  closingGame?: boolean;
 }
 
 export interface BotAPI {

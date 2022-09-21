@@ -1,5 +1,6 @@
 import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
 import { CardSymbol, createDeck, shuttleDeck } from './deck';
+import { GameMode, validateClosing } from './mode';
 import { AnnoucementType, Player } from './player';
 import { calculateTrick } from './trick';
 
@@ -50,6 +51,7 @@ export const determineWinner = (
 
 export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const deck = shuttleDeck(createDeck());
+  let gameMode = GameMode.Normal;
   // TODO: Player cut?
 
   let first: Player = firstToPlay === FirstToPlay.A ? playerA : playerB;
@@ -71,7 +73,11 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
   // Trick
   while (first.cards.length !== 0) {
-    const { card: firstCard, announcements } = first.playTrick(first.cards);
+    const {
+      card: firstCard,
+      announcements,
+      closingGame,
+    } = first.playTrick(first.cards);
     // TODO: Validation
 
     if (first.hasWonTrick) {
@@ -97,10 +103,19 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
           });
         } catch (err) {}
       }
+
+      // The closing player can meld a marriage immediately before closing,
+      // but no marriages can be melded in subsequent tricks.
+      if (closingGame) {
+        try {
+          validateClosing(deck);
+          gameMode = GameMode.Closed;
+        } catch (err) {}
+      }
     }
 
     const { card: secondCard } = second.playTrick(second.cards);
-    // TODO: Validation
+    // TODO: Validation + gameMode
 
     const { winnerCard, points } = calculateTrick({
       firstCard,

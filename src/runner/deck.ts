@@ -77,3 +77,5 @@ export const shuttleDeck = (deck: Card[]) => {
 
   return result;
 };
+
+export const isDepleted = (deck: Card[]) => deck.length <= 2;

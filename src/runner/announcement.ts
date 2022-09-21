@@ -1,4 +1,4 @@
-import { Card, CardSymbol } from './deck';
+import { Card, CardSymbol, isDepleted } from './deck';
 
 export const isRoyalMarriage = (trump: Card, spouse: Card): boolean =>
   trump.suit === spouse.suit;
@@ -44,7 +44,7 @@ export const validateNineOfTrumps = ({ hand, trump, deck }): void => {
     throw new Error('Cheating! You dont have this card!');
   }
 
-  if (deck.length <= 2) {
+  if (isDepleted(deck)) {
     throw new Error('Cheating! You cant swap trumps!');
   }
 };

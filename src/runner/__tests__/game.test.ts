@@ -3,6 +3,7 @@ import { game } from '../game';
 import { createPlayer } from '../player';
 
 jest.mock('../deal', () => ({
+  ...jest.requireActual('../deal'),
   deal: jest.fn(),
 }));
 
@@ -66,4 +67,24 @@ it('should give a bonus point if previos trick was draw', () => {
 
   expect(deal).toHaveBeenCalledTimes(2); // 7 = 1 game * 6 points + 1 bonus
   expect(winner).toEqual(playerB);
+});
+
+it('should rotate players order (players take turns who plays first)', () => {
+  const { playerA, playerB } = createPlayers();
+
+  (deal as jest.Mock).mockReturnValue({
+    winner: playerB,
+    points: 1,
+  });
+
+  game({ playerA, playerB });
+
+  expect(deal).toHaveBeenNthCalledWith(
+    1,
+    expect.objectContaining({ firstToPlay: 'A' }),
+  );
+  expect(deal).toHaveBeenNthCalledWith(
+    2,
+    expect.objectContaining({ firstToPlay: 'B' }),
+  );
 });

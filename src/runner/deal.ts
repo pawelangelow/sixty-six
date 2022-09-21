@@ -2,14 +2,16 @@ import { createDeck, shuttleDeck } from './deck';
 import { Player } from './player';
 import { calculateTrick } from './trick';
 
+export enum FirstToPlay {
+  A = 'A',
+  B = 'B',
+}
+
 export interface DealProps {
   playerA: Player;
   playerB: Player;
-  firstToPlay: null | 'A' | 'B';
+  firstToPlay: FirstToPlay;
 }
-
-// TODO: this has to be random
-const getFirstPlayer = (a: Player, b: Player) => [a, b];
 
 const calculateDealPoints = (loser: Player): number => {
   if (loser.points === 0 && !loser.hasWonTrick) {
@@ -48,12 +50,8 @@ export const determineWinner = (
 export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const deck = shuttleDeck(createDeck());
 
-  let first: Player = firstToPlay === 'A' ? playerA : playerB;
-  let second: Player = firstToPlay === 'A' ? playerB : playerA;
-
-  if (!firstToPlay) {
-    [first, second] = getFirstPlayer(playerA, playerB);
-  }
+  let first: Player = firstToPlay === FirstToPlay.A ? playerA : playerB;
+  let second: Player = firstToPlay === FirstToPlay.A ? playerB : playerA;
 
   first.cards = [...deck.splice(0, 3)];
   second.cards = [...deck.splice(0, 3)];

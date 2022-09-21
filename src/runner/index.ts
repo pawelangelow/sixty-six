@@ -3,12 +3,19 @@ import { game } from './game';
 import { createPlayer } from './player';
 
 const playerA = createPlayer({
-  playTrick: (cards: Card[]) => cards[0],
+  playTrick: (cards: Card[]) => ({
+    card: cards[0],
+    announcements: [],
+  }),
   name: 'player A',
 });
 
 const playerB = createPlayer({
-  playTrick: (cards: Card[]) => cards[0],
+  playTrick: (cards: Card[]) => ({
+    card: cards[0],
+    announcements: [],
+  }),
+
   name: 'player B',
 });
 

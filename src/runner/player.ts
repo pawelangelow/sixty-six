@@ -1,7 +1,21 @@
 import { Card } from './deck';
 
+export enum AnnoucementType {
+  Marriage,
+  NineOfTrumps,
+}
+
+export type Annoucement =
+  | AnnoucementType.Marriage
+  | AnnoucementType.NineOfTrumps;
+
+export interface Play {
+  card: Card;
+  announcements?: Annoucement[];
+}
+
 export interface BotAPI {
-  playTrick: (cards: Card[]) => Card;
+  playTrick: (cards: Card[]) => Play;
   name: string;
 }
 export interface Player extends BotAPI {

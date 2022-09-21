@@ -67,9 +67,9 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
   // Trick
   while (first.cards.length !== 0) {
-    const firstCard = first.playTrick(first.cards);
+    const { card: firstCard, announcements } = first.playTrick(first.cards);
     // TODO: Validation
-    const secondCard = second.playTrick(second.cards);
+    const { card: secondCard } = second.playTrick(second.cards);
     // TODO: Validation
 
     const { winnerCard, points } = calculateTrick({

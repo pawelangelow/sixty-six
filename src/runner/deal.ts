@@ -49,6 +49,7 @@ export const determineWinner = (
 
 export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const deck = shuttleDeck(createDeck());
+  // TODO: Player cut?
 
   let first: Player = firstToPlay === FirstToPlay.A ? playerA : playerB;
   let second: Player = firstToPlay === FirstToPlay.A ? playerB : playerA;

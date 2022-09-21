@@ -13,7 +13,7 @@ const playerB = createPlayer({
 });
 
 const { winner } = game({ playerA, playerB });
-console.log(winner.name);
+console.log(`${winner.name} (${playerA.gamePoints} vs ${playerB.gamePoints} )`);
 
 // https://bicyclecards.com/how-to-play/sixty-six/
 // Determine who's the dealer

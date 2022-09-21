@@ -69,6 +69,17 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   while (first.cards.length !== 0) {
     const { card: firstCard, announcements } = first.playTrick(first.cards);
     // TODO: Validation
+      if (announcements?.includes(AnnoucementType.Marriage)) {
+        try {
+          first.points += calculateMarriageBonus({
+            spouse: firstCard,
+            hand: first.cards,
+            trump: trumpCard,
+          });
+        } catch (err) {}
+      }
+    }
+
     const { card: secondCard } = second.playTrick(second.cards);
     // TODO: Validation
 

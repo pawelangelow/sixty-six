@@ -34,3 +34,17 @@ export const calculateMarriageBonus = ({ spouse, hand, trump }): number => {
   return isRoyalMarriage(trump, spouse) ? 40 : 20;
 };
 
+export const validateNineOfTrumps = ({ hand, trump, deck }): void => {
+  if (
+    !hand.find(
+      (card: Card) =>
+        card.suit === trump.suit && card.symbol === CardSymbol.Nine,
+    )
+  ) {
+    throw new Error('Cheating! You dont have this card!');
+  }
+
+  if (deck.length <= 2) {
+    throw new Error('Cheating! You cant swap trumps!');
+  }
+};

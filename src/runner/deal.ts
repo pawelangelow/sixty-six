@@ -1,5 +1,6 @@
-import { createDeck, shuttleDeck } from './deck';
-import { Player } from './player';
+import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
+import { CardSymbol, createDeck, shuttleDeck } from './deck';
+import { AnnoucementType, Player } from './player';
 import { calculateTrick } from './trick';
 
 export enum FirstToPlay {
@@ -65,10 +66,28 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
   console.log('trump is: ', trumpCard.toString());
 
+  const createNineOfTrumpFilter = (trump) => (card) =>
+    card.symbol === CardSymbol.Nine && card.suit === trump.suit;
+
   // Trick
   while (first.cards.length !== 0) {
     const { card: firstCard, announcements } = first.playTrick(first.cards);
     // TODO: Validation
+
+    if (first.hasWonTrick) {
+      if (announcements?.includes(AnnoucementType.NineOfTrumps)) {
+        try {
+          validateNineOfTrumps({ hand: first.cards, trump: trumpCard, deck });
+          const nineOfTrumpsFilter = createNineOfTrumpFilter(trumpCard);
+
+          const exchangedTrump = deck.pop();
+          const nineOfTrumps = first.cards.find(nineOfTrumpsFilter);
+          first.cards = first.cards.filter(nineOfTrumpsFilter);
+          first.cards.push(exchangedTrump);
+          deck.push(nineOfTrumps);
+        } catch (err) {}
+      }
+
       if (announcements?.includes(AnnoucementType.Marriage)) {
         try {
           first.points += calculateMarriageBonus({

@@ -76,3 +76,51 @@ describe('calculateMarriageBonus()', () => {
   });
 });
 
+describe('validateNineOfTrumps()', () => {
+  const deck = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  it("should throw when the nine trump card doesn't belong to player's hand", () => {
+    const setup = () => {
+      validateNineOfTrumps({
+        hand: [],
+        trump: card(CardSuit.Clubs, CardSymbol.Ten),
+        deck,
+      });
+    };
+
+    expect(setup).toThrowError('Cheating! You dont have this card!');
+  });
+
+  it('should throw when stock is depleted', () => {
+    const setup = () => {
+      validateNineOfTrumps({
+        hand: [card(CardSuit.Clubs, CardSymbol.Nine)],
+        trump: card(CardSuit.Clubs, CardSymbol.Ten),
+        deck: [],
+      });
+    };
+
+    expect(setup).toThrowError('Cheating! You cant swap trumps!');
+  });
+
+  it('should throw on last trick', () => {
+    const setup = () => {
+      validateNineOfTrumps({
+        hand: [card(CardSuit.Clubs, CardSymbol.Nine)],
+        trump: card(CardSuit.Clubs, CardSymbol.Ten),
+        deck: [1, 2],
+      });
+    };
+
+    expect(setup).toThrowError('Cheating! You cant swap trumps!');
+  });
+
+  it('should return undefined when player has the nine trump card', () => {
+    const result = validateNineOfTrumps({
+      hand: [card(CardSuit.Clubs, CardSymbol.Nine)],
+      trump: card(CardSuit.Clubs, CardSymbol.Ten),
+      deck,
+    });
+
+    expect(result).toEqual(undefined);
+  });
+});

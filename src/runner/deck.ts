@@ -17,6 +17,7 @@ export enum CardSuit {
 export interface Card {
   symbol: CardSymbol;
   suit: CardSuit;
+  toString: () => string;
 }
 
 const symbols = [
@@ -51,18 +52,17 @@ const mapSymbolToChar = {
   [CardSymbol.Ace]: 'A',
 };
 
+export const createCard = (suit: CardSuit, symbol: CardSymbol): Card => ({
+  suit,
+  symbol,
+  toString: () => mapSymbolToChar[symbol] + mapSuitToIcon[suit],
+});
+
 export const createDeck = (): Card[] =>
   suits.reduce(
     (deck: Card[], suit: CardSuit) => [
       ...deck,
-      ...symbols.map(
-        (symbol) =>
-          ({
-            suit,
-            symbol,
-            toString: () => mapSymbolToChar[symbol] + mapSuitToIcon[suit],
-          } as Card),
-      ),
+      ...symbols.map((symbol) => createCard(suit, symbol)),
     ],
     [],
   );

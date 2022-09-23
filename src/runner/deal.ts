@@ -184,6 +184,11 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
       first.cards.push(...deck.splice(0, 1));
       second.cards.push(...deck.splice(0, 1));
     }
+
+    // Deck is depleted, going to closed game mode
+    if (!deck.length && gameMode === GameMode.Normal) {
+      gameMode = GameMode.Closed;
+    }
   }
 
   // Last trick gives +10 points to the winner

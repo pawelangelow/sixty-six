@@ -1,5 +1,7 @@
-import { determineWinner } from '../deal';
-import { Player } from '../player';
+import { determineWinner, playCard } from '../deal';
+import { CardSuit, CardSymbol } from '../deck';
+import { GameMode } from '../mode';
+import { createPlayer, Player } from '../player';
 
 const commonProps = {
   cards: [],
@@ -188,6 +190,61 @@ describe('Deal', () => {
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toBeFalsy();
         expect(points).toEqual(1);
+      });
+    });
+  });
+
+  describe('playCard()', () => {
+    describe('first player', () => {
+      const playTrick = jest.fn();
+      const player = createPlayer({
+        playTrick,
+        name: 'Bot',
+      });
+
+      it('should throw when player is not following the rules (playing card not possesed)', () => {
+        player.cards = [];
+        playTrick.mockImplementation(() => ({
+          suit: CardSuit.Clubs,
+          symbol: CardSymbol.Ace,
+        }));
+
+        const setup = () => {
+          playCard(
+            player,
+            { suit: CardSuit.Clubs, symbol: CardSymbol.Ace },
+            GameMode.Closed,
+          );
+        };
+
+        expect(setup).toThrow('Cheating! Rules are not being followed!');
+      });
+    });
+
+    describe('second player', () => {
+      const playTrick = jest.fn();
+      const player = createPlayer({
+        playTrick,
+        name: 'Bot',
+      });
+
+      it('should throw when player is not following the rules (playing card not possesed)', () => {
+        player.cards = [];
+        playTrick.mockImplementation(() => ({
+          suit: CardSuit.Clubs,
+          symbol: CardSymbol.Ace,
+        }));
+
+        const setup = () => {
+          playCard(
+            player,
+            { suit: CardSuit.Clubs, symbol: CardSymbol.Ace },
+            GameMode.Normal,
+            { suit: CardSuit.Hearts, symbol: CardSymbol.Ace },
+          );
+        };
+
+        expect(setup).toThrow('Cheating! Rules are not being followed!');
       });
     });
   });

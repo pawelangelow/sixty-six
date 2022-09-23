@@ -16,7 +16,7 @@ export interface Play {
 }
 
 export interface BotAPI {
-  playTrick: (cards: Card[]) => Play;
+  playTrick: (cards: Card[], oponentCard?: Card) => Play;
   name: string;
 }
 export interface Player extends BotAPI {

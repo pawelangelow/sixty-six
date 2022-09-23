@@ -1,6 +1,7 @@
 import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
-import { CardSymbol, createDeck, shuttleDeck } from './deck';
+import { Card, CardSymbol, createDeck, shuttleDeck } from './deck';
 import { GameMode, validateClosing } from './mode';
+import { validatePlay } from './play';
 import { AnnoucementType, Player } from './player';
 import { calculateTrick } from './trick';
 
@@ -28,6 +29,46 @@ const calculateDealPoints = (loser: Player): number => {
 };
 
 const WINNING_POINTS = 66;
+
+export const playCard = (
+  player: Player,
+  trump: Card,
+  gameMode: GameMode,
+  oponentCard?: Card,
+) => {
+  let card;
+  let announcements;
+  let closingGame;
+  let attempts = 0;
+
+  do {
+    const {
+      card: playerCard,
+      announcements: playerAnnouncements,
+      closingGame: playerClosingGame,
+    } = player.playTrick(player.cards, oponentCard);
+
+    attempts++;
+    if (attempts === 10) {
+      throw new Error('Cheating! Rules are not being followed!');
+    }
+
+    try {
+      validatePlay({
+        card: playerCard,
+        trump,
+        gameMode,
+        hand: player.cards,
+      });
+
+      card = playerCard;
+      announcements = playerAnnouncements;
+      closingGame = playerClosingGame;
+    } catch (err) {}
+  } while (!card);
+
+  return { card, announcements, closingGame };
+};
 
 export const determineWinner = (
   a: Player,
@@ -77,8 +118,7 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
       card: firstCard,
       announcements,
       closingGame,
-    } = first.playTrick(first.cards);
-    // TODO: Validation
+    } = playCard(first, trumpCard, gameMode);
 
     if (first.hasWonTrick) {
       if (announcements?.includes(AnnoucementType.NineOfTrumps)) {
@@ -114,8 +154,12 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
       }
     }
 
-    const { card: secondCard } = second.playTrick(second.cards);
-    // TODO: Validation + gameMode
+    const { card: secondCard } = playCard(
+      second,
+      trumpCard,
+      gameMode,
+      firstCard,
+    );
 
     const { winnerCard, points } = calculateTrick({
       firstCard,

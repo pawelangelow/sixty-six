@@ -5,6 +5,11 @@ import { validatePlay } from './play';
 import { AnnoucementType, Player } from './player';
 import { calculateTrick } from './trick';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const debug = (...args) => {
+  // return console.log(...args);
+};
+
 export enum FirstToPlay {
   A = 'A',
   B = 'B',
@@ -107,13 +112,18 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const trumpCard = deck.splice(0, 1)[0];
   deck.push(trumpCard);
 
-  console.log('trump is: ', trumpCard.toString());
 
   const createNineOfTrumpFilter = (trump) => (card) =>
     card.symbol === CardSymbol.Nine && card.suit === trump.suit;
+  debug('trump is: ', trumpCard.toString());
 
   // Trick
   while (first.cards.length !== 0) {
+    debug(
+      `Before trick: Player A hand: ${playerA.cards.join(
+        ', ',
+      )} | Player B hand: ${playerB.cards.join(', ')}`,
+    );
     const {
       card: firstCard,
       announcements,
@@ -131,10 +141,13 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
           });
           const nineOfTrumpsFilter = createNineOfTrumpFilter(trumpCard);
 
+          debug('Swapping 9 for other card. Trump: ', trumpCard.toString());
+          debug(`Players hand before: ${first.cards.join(', ')}`);
           const exchangedTrump = deck.pop();
           const nineOfTrumps = first.cards.find(nineOfTrumpsFilter);
           first.cards = first.cards.filter(nineOfTrumpsFilter);
           first.cards.push(exchangedTrump);
+          debug(`Players hand after: ${first.cards.join(', ')}`);
           deck.push(nineOfTrumps);
         } catch (err) {}
       }
@@ -183,6 +196,10 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
     first.points += points;
     first.hasWonTrick = true;
+
+    debug(
+      `${firstCard} - ${secondCard} | winner is ${first.name}, + ${points} (total: ${first.points})`,
+    );
 
     if (deck.length !== 0) {
       // Draw cards

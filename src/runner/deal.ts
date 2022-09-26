@@ -123,7 +123,12 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
     if (first.hasWonTrick) {
       if (announcements?.includes(AnnoucementType.NineOfTrumps)) {
         try {
-          validateNineOfTrumps({ hand: first.cards, trump: trumpCard, deck });
+          validateNineOfTrumps({
+            hand: first.cards,
+            trump: trumpCard,
+            deck,
+            playedCard: firstCard,
+          });
           const nineOfTrumpsFilter = createNineOfTrumpFilter(trumpCard);
 
           const exchangedTrump = deck.pop();

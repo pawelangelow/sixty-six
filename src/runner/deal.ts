@@ -112,9 +112,6 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const trumpCard = deck.splice(0, 1)[0];
   deck.push(trumpCard);
 
-
-  const createNineOfTrumpFilter = (trump) => (card) =>
-    card.symbol === CardSymbol.Nine && card.suit === trump.suit;
   debug('trump is: ', trumpCard.toString());
 
   // Trick
@@ -139,13 +136,20 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
             deck,
             playedCard: firstCard,
           });
-          const nineOfTrumpsFilter = createNineOfTrumpFilter(trumpCard);
 
           debug('Swapping 9 for other card. Trump: ', trumpCard.toString());
           debug(`Players hand before: ${first.cards.join(', ')}`);
           const exchangedTrump = deck.pop();
-          const nineOfTrumps = first.cards.find(nineOfTrumpsFilter);
-          first.cards = first.cards.filter(nineOfTrumpsFilter);
+          const nineOfTrumps = first.cards.find(
+            (card) =>
+              card.symbol === CardSymbol.Nine && card.suit === trumpCard.suit,
+          );
+          first.cards = first.cards.filter(
+            (card) =>
+              !(
+                card.symbol === CardSymbol.Nine && card.suit === trumpCard.suit
+              ),
+          );
           first.cards.push(exchangedTrump);
           debug(`Players hand after: ${first.cards.join(', ')}`);
           deck.push(nineOfTrumps);

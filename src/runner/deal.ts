@@ -5,91 +5,6 @@ import { validatePlay } from './play';
 import { AnnoucementType, TickContext, Player } from './player';
 import { calculateTrick } from './trick';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const debug = (...args) => {
-  // return console.log(...args);
-};
-
-export enum FirstToPlay {
-  A = 'A',
-  B = 'B',
-}
-
-export interface DealProps {
-  playerA: Player;
-  playerB: Player;
-  firstToPlay: FirstToPlay;
-}
-
-const calculateDealPoints = (loser: Player): number => {
-  if (loser.points === 0 && !loser.hasWonTrick) {
-    return 3;
-  }
-
-  if (loser.points < 33) {
-    return 2;
-  }
-
-  return 1;
-};
-
-const WINNING_POINTS = 66;
-
-export const playCard = (player: Player, context: TickContext) => {
-  let card;
-  let announcements;
-  let closingGame;
-  let attempts = 0;
-
-  do {
-    const {
-      card: playerCard,
-      announcements: playerAnnouncements,
-      closingGame: playerClosingGame,
-    } = player.playTrick(player.cards, context);
-
-    attempts++;
-    if (attempts === 10) {
-      throw new Error('Cheating! Rules are not being followed!');
-    }
-
-    try {
-      validatePlay({
-        card: playerCard,
-        trump: context.trump,
-        gameMode: context.gameMode,
-        hand: player.cards,
-      });
-
-      card = playerCard;
-      announcements = playerAnnouncements;
-      closingGame = playerClosingGame;
-    } catch (err) {}
-  } while (!card);
-
-  return { card, announcements, closingGame };
-};
-
-export const determineWinner = (
-  a: Player,
-  b: Player,
-): { winner: Player | null; points: number } => {
-  // If neither player scores 66, or each has scored 66 or more without announcing it,
-  // no one scores in that hand and 1 game point is added to the score of the winner of the next hand.
-  if (
-    (a.points >= WINNING_POINTS && b.points >= WINNING_POINTS) ||
-    (a.points < WINNING_POINTS && b.points < WINNING_POINTS)
-  ) {
-    return { winner: null, points: 1 };
-  }
-
-  if (a.points >= WINNING_POINTS) {
-    return { winner: a, points: calculateDealPoints(b) };
-  }
-
-  return { winner: b, points: calculateDealPoints(a) };
-};
-
 export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const deck = shuttleDeck(createDeck());
   let gameMode = GameMode.Normal;
@@ -241,4 +156,89 @@ const notifyPlayer = (player: Player, winnerName: string) => {
   if (player.onFinishGame) {
     player.onFinishGame(winnerName);
   }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const debug = (...args) => {
+  // return console.log(...args);
+};
+
+export enum FirstToPlay {
+  A = 'A',
+  B = 'B',
+}
+
+export interface DealProps {
+  playerA: Player;
+  playerB: Player;
+  firstToPlay: FirstToPlay;
+}
+
+const calculateDealPoints = (loser: Player): number => {
+  if (loser.points === 0 && !loser.hasWonTrick) {
+    return 3;
+  }
+
+  if (loser.points < 33) {
+    return 2;
+  }
+
+  return 1;
+};
+
+const WINNING_POINTS = 66;
+
+export const playCard = (player: Player, context: TickContext) => {
+  let card;
+  let announcements;
+  let closingGame;
+  let attempts = 0;
+
+  do {
+    const {
+      card: playerCard,
+      announcements: playerAnnouncements,
+      closingGame: playerClosingGame,
+    } = player.playTrick(player.cards, context);
+
+    attempts++;
+    if (attempts === 10) {
+      throw new Error('Cheating! Rules are not being followed!');
+    }
+
+    try {
+      validatePlay({
+        card: playerCard,
+        trump: context.trump,
+        gameMode: context.gameMode,
+        hand: player.cards,
+      });
+
+      card = playerCard;
+      announcements = playerAnnouncements;
+      closingGame = playerClosingGame;
+    } catch (err) {}
+  } while (!card);
+
+  return { card, announcements, closingGame };
+};
+
+export const determineWinner = (
+  a: Player,
+  b: Player,
+): { winner: Player | null; points: number } => {
+  // If neither player scores 66, or each has scored 66 or more without announcing it,
+  // no one scores in that hand and 1 game point is added to the score of the winner of the next hand.
+  if (
+    (a.points >= WINNING_POINTS && b.points >= WINNING_POINTS) ||
+    (a.points < WINNING_POINTS && b.points < WINNING_POINTS)
+  ) {
+    return { winner: null, points: 1 };
+  }
+
+  if (a.points >= WINNING_POINTS) {
+    return { winner: a, points: calculateDealPoints(b) };
+  }
+
+  return { winner: b, points: calculateDealPoints(a) };
 };

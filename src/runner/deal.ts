@@ -209,7 +209,10 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
     // Deck is depleted, going to closed game mode
     if (!deck.length && gameMode === GameMode.Normal) {
       gameMode = GameMode.Closed;
+      debug('Game is now in Closed state');
     }
+
+    debug(`Remaining deck (total cards ${deck.length}): ${deck.join(', ')}`);
   }
 
   // Last trick gives +10 points to the winner

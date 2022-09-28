@@ -1,8 +1,8 @@
 import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
-import { Card, CardSymbol, createDeck, shuttleDeck } from './deck';
+import { CardSymbol, createDeck, shuttleDeck } from './deck';
 import { GameMode, validateClosing } from './mode';
 import { validatePlay } from './play';
-import { AnnoucementType, Player } from './player';
+import { AnnoucementType, TickContext, Player } from './player';
 import { calculateTrick } from './trick';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,12 +35,7 @@ const calculateDealPoints = (loser: Player): number => {
 
 const WINNING_POINTS = 66;
 
-export const playCard = (
-  player: Player,
-  trump: Card,
-  gameMode: GameMode,
-  oponentCard?: Card,
-) => {
+export const playCard = (player: Player, context: TickContext) => {
   let card;
   let announcements;
   let closingGame;
@@ -51,7 +46,7 @@ export const playCard = (
       card: playerCard,
       announcements: playerAnnouncements,
       closingGame: playerClosingGame,
-    } = player.playTrick(player.cards, oponentCard);
+    } = player.playTrick(player.cards, context);
 
     attempts++;
     if (attempts === 10) {
@@ -61,8 +56,8 @@ export const playCard = (
     try {
       validatePlay({
         card: playerCard,
-        trump,
-        gameMode,
+        trump: context.trump,
+        gameMode: context.gameMode,
         hand: player.cards,
       });
 
@@ -125,7 +120,7 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
       card: firstCard,
       announcements,
       closingGame,
-    } = playCard(first, trumpCard, gameMode);
+    } = playCard(first, { gameMode, trump: trumpCard });
 
     if (first.hasWonTrick) {
       if (announcements?.includes(AnnoucementType.NineOfTrumps)) {
@@ -176,12 +171,12 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
       }
     }
 
-    const { card: secondCard } = playCard(
-      second,
-      trumpCard,
+    const { card: secondCard } = playCard(second, {
+      oponentCard: firstCard,
+      oponentAnnouncements: announcements,
       gameMode,
-      firstCard,
-    );
+      trump: trumpCard,
+    });
 
     const { winnerCard, points } = calculateTrick({
       firstCard,
@@ -220,5 +215,14 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   // Last trick gives +10 points to the winner
   first.points += 10;
 
-  return determineWinner(first, second);
+  const result = determineWinner(first, second);
+  notifyPlayer(first, result.winner?.name);
+  notifyPlayer(second, result.winner?.name);
+  return result;
+};
+
+const notifyPlayer = (player: Player, winnerName: string) => {
+  if (player.onFinishGame) {
+    player.onFinishGame(winnerName);
+  }
 };

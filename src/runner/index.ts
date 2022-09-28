@@ -1,29 +1,10 @@
-import { Card } from './deck';
+import { createDummyPlater } from '../dummy-player';
 import { game } from './game';
-import { createPlayer } from './player';
 
-const playerA = createPlayer({
-  playTrick: (cards: Card[]) => ({
-    card: cards[0],
-    announcements: [],
-  }),
-  name: 'player A',
-});
-
-const playerB = createPlayer({
-  playTrick: (cards: Card[]) => ({
-    card: cards[0],
-    announcements: [],
-  }),
-
-  name: 'player B',
-});
+const playerA = createDummyPlater('Player A');
+const playerB = createDummyPlater('Player B');
 
 const { winner } = game({ playerA, playerB });
-console.log(`${winner.name} (${playerA.gamePoints} vs ${playerB.gamePoints} )`);
+console.log(`${winner.name} (${playerA.gamePoints} vs ${playerB.gamePoints})`);
 
 // https://bicyclecards.com/how-to-play/sixty-six/
-
-// Trick
-//      Determine the mode (normal, closed)
-//      Announcements - marriage, change trump 9

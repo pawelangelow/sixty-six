@@ -1,4 +1,5 @@
 import { Card } from './deck';
+import { GameMode } from './mode';
 
 export enum AnnoucementType {
   Marriage,
@@ -15,8 +16,16 @@ export interface Play {
   closingGame?: boolean;
 }
 
+export interface TickContext {
+  oponentCard?: Card;
+  oponentAnnouncements?: Annoucement[];
+  gameMode: GameMode;
+  trump: Card;
+}
+
 export interface BotAPI {
-  playTrick: (cards: Card[], oponentCard?: Card) => Play;
+  playTrick: (cards: Card[], tickContext: TickContext) => Play;
+  onFinishGame?: (winnerName: string) => void;
   name: string;
 }
 export interface Player extends BotAPI {

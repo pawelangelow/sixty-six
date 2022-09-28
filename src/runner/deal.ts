@@ -1,5 +1,5 @@
 import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
-import { CardSymbol, createDeck, shuttleDeck } from './deck';
+import { Card, CardSymbol, createDeck, shuttleDeck } from './deck';
 import { GameMode, validateClosing } from './mode';
 import { validatePlay } from './play';
 import { AnnoucementType, TickContext, Player } from './player';
@@ -98,14 +98,9 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   let first: Player = firstToPlay === FirstToPlay.A ? playerA : playerB;
   let second: Player = firstToPlay === FirstToPlay.A ? playerB : playerA;
 
-  first.cards = [...deck.splice(0, 3)];
-  second.cards = [...deck.splice(0, 3)];
+  dealCards(first, second, deck);
 
-  first.cards.push(...deck.splice(0, 3));
-  second.cards.push(...deck.splice(0, 3));
-
-  const trumpCard = deck.splice(0, 1)[0];
-  deck.push(trumpCard);
+  const trumpCard = getTrump(deck);
 
   debug('trump is: ', trumpCard.toString());
 
@@ -222,6 +217,24 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   notifyPlayer(first, result.winner?.name);
   notifyPlayer(second, result.winner?.name);
   return result;
+};
+
+export const dealCards = (
+  first: Player,
+  second: Player,
+  deck: Card[],
+): void => {
+  first.cards = [...deck.splice(0, 3)];
+  second.cards = [...deck.splice(0, 3)];
+
+  first.cards.push(...deck.splice(0, 3));
+  second.cards.push(...deck.splice(0, 3));
+};
+
+export const getTrump = (deck: Card[]): Card => {
+  const trumpCard = deck.splice(0, 1)[0];
+  deck.push(trumpCard);
+  return trumpCard;
 };
 
 const notifyPlayer = (player: Player, winnerName: string) => {

@@ -202,7 +202,7 @@ describe('Deal', () => {
         name: 'Bot',
       });
 
-      it('should throw when player is not following the rules (playing card not possesed)', () => {
+      it('should throw when player is not following the rules (played card not possesed)', () => {
         player.cards = [];
         playTrick.mockImplementation(() => ({
           suit: CardSuit.Clubs,
@@ -210,11 +210,10 @@ describe('Deal', () => {
         }));
 
         const setup = () => {
-          playCard(
-            player,
-            { suit: CardSuit.Clubs, symbol: CardSymbol.Ace },
-            GameMode.Closed,
-          );
+          playCard(player, {
+            gameMode: GameMode.Closed,
+            trump: { suit: CardSuit.Clubs, symbol: CardSymbol.Ace },
+          });
         };
 
         expect(setup).toThrow('Cheating! Rules are not being followed!');
@@ -228,7 +227,7 @@ describe('Deal', () => {
         name: 'Bot',
       });
 
-      it('should throw when player is not following the rules (playing card not possesed)', () => {
+      it('should throw when player is not following the rules (played card not possesed)', () => {
         player.cards = [];
         playTrick.mockImplementation(() => ({
           suit: CardSuit.Clubs,
@@ -236,12 +235,11 @@ describe('Deal', () => {
         }));
 
         const setup = () => {
-          playCard(
-            player,
-            { suit: CardSuit.Clubs, symbol: CardSymbol.Ace },
-            GameMode.Normal,
-            { suit: CardSuit.Hearts, symbol: CardSymbol.Ace },
-          );
+          playCard(player, {
+            gameMode: GameMode.Normal,
+            trump: { suit: CardSuit.Clubs, symbol: CardSymbol.Ace },
+            oponentCard: { suit: CardSuit.Hearts, symbol: CardSymbol.Ace },
+          });
         };
 
         expect(setup).toThrow('Cheating! Rules are not being followed!');

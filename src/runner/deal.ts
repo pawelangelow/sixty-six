@@ -1,12 +1,9 @@
+import { debug } from '../utils/logger';
 import { Card, createDeck, shuttleDeck } from './deck';
 import { GameMode } from './mode';
 import { Player } from './player';
 import { playTrick } from './trick';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const debug = (...args) => {
-  // return console.log(...args);
-};
 export interface DealProps {
   playerA: Player;
   playerB: Player;

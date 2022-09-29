@@ -1,10 +1,9 @@
+import { debug } from '../utils/logger';
 import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
 import { Card, CardSymbol } from './deck';
 import { GameMode, validateClosing } from './mode';
 import { validatePlay } from './play';
 import { AnnoucementType, Player, TickContext } from './player';
-
-const debug = console.log;
 
 export interface TrickResult {
   winner: Player;

@@ -81,10 +81,10 @@ it('should rotate players order (players take turns who plays first)', () => {
 
   expect(deal).toHaveBeenNthCalledWith(
     1,
-    expect.objectContaining({ firstToPlay: 'A' }),
+    expect.objectContaining({ firstToPlay: playerA }),
   );
   expect(deal).toHaveBeenNthCalledWith(
     2,
-    expect.objectContaining({ firstToPlay: 'B' }),
+    expect.objectContaining({ firstToPlay: playerB }),
   );
 });

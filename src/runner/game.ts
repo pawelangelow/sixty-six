@@ -1,4 +1,4 @@
-import { deal, FirstToPlay } from './deal';
+import { deal } from './deal';
 import { Player } from './player';
 
 interface GameProps {
@@ -10,10 +10,11 @@ export interface GameResult {
 }
 
 // TODO: this has to be random
-const getFirstPlayer = (): FirstToPlay => FirstToPlay.A;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getFirstPlayer = (a: Player, b: Player): Player => a;
 
 export const game = ({ playerA, playerB }: GameProps): GameResult => {
-  let firstToPlay = getFirstPlayer();
+  let firstToPlay = getFirstPlayer(playerA, playerB);
   let pendingPoints = 0;
 
   while (playerA.gamePoints < 7 && playerB.gamePoints < 7) {
@@ -38,7 +39,7 @@ export const game = ({ playerA, playerB }: GameProps): GameResult => {
 
     // After each hand, the deal alternates between the two players.
     // Reference: https://www.catsatcards.com/Games/Sixty-Six.html
-    firstToPlay = firstToPlay === FirstToPlay.A ? FirstToPlay.B : FirstToPlay.A;
+    firstToPlay = firstToPlay === playerA ? playerB : playerA;
   }
 
   return {

@@ -1,7 +1,8 @@
-import { determineWinner, playCard } from '../deal';
+import { determineWinner } from '../deal';
 import { CardSuit, CardSymbol } from '../deck';
 import { GameMode } from '../mode';
 import { createPlayer, Player } from '../player';
+import { playCard } from '../trick';
 
 const commonProps = {
   cards: [],

@@ -21,6 +21,7 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
   const trumpCard = getTrump(deck);
 
+  debug('='.repeat(30));
   debug('trump is: ', trumpCard.toString());
 
   // Trick
@@ -51,6 +52,8 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
   // Last trick gives +10 points to the winner
   first.points += 10;
+
+  debug('='.repeat(30));
 
   const result = determineWinner(first, second);
   notifyPlayer(first, result.winner?.name);

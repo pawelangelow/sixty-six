@@ -15,11 +15,17 @@ const createPlayers = () => {
   const playerA = createPlayer({
     playTrick: () => null,
     name: 'player A',
+    announceMarriage: () => false,
+    announceNineOfTrumps: () => false,
+    closeTheGame: () => false,
   });
 
   const playerB = createPlayer({
     playTrick: () => null,
     name: 'player B',
+    announceMarriage: () => false,
+    announceNineOfTrumps: () => false,
+    closeTheGame: () => false,
   });
 
   return { playerA, playerB };

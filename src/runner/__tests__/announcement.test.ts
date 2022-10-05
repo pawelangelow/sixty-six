@@ -84,7 +84,6 @@ describe('validateNineOfTrumps()', () => {
         hand: [],
         trump: card(CardSuit.Clubs, CardSymbol.Ten),
         deck,
-        playedCard: {},
       });
     };
 
@@ -97,7 +96,6 @@ describe('validateNineOfTrumps()', () => {
         hand: [card(CardSuit.Clubs, CardSymbol.Nine)],
         trump: card(CardSuit.Clubs, CardSymbol.Ten),
         deck: [],
-        playedCard: {},
       });
     };
 
@@ -110,25 +108,10 @@ describe('validateNineOfTrumps()', () => {
         hand: [card(CardSuit.Clubs, CardSymbol.Nine)],
         trump: card(CardSuit.Clubs, CardSymbol.Ten),
         deck: [1, 2],
-        playedCard: {},
       });
     };
 
     expect(setup).toThrowError('Cheating! You cant swap trumps!');
-  });
-
-  it('should throw if trying to play nineOfTrumps', () => {
-    const setup = () => {
-      const nineOfTrumps = card(CardSuit.Clubs, CardSymbol.Nine);
-      validateNineOfTrumps({
-        hand: [nineOfTrumps],
-        trump: card(CardSuit.Clubs, CardSymbol.Ten),
-        deck: [1, 2, 3, 4, 5, 6],
-        playedCard: nineOfTrumps,
-      });
-    };
-
-    expect(setup).toThrowError('Cheating! You cant play swapped 9!');
   });
 
   it('should return undefined when player has the nine trump card', () => {
@@ -136,7 +119,6 @@ describe('validateNineOfTrumps()', () => {
       hand: [card(CardSuit.Clubs, CardSymbol.Nine)],
       trump: card(CardSuit.Clubs, CardSymbol.Ten),
       deck,
-      playedCard: {},
     });
 
     expect(result).toEqual(undefined);

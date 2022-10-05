@@ -1,8 +1,13 @@
-import { checkForAnnouncements, checkForSuitableCard } from '.';
+import {
+  checkForMarriageAnnouncement,
+  checkForNineOfTrumps,
+  checkForSuitableCard,
+  findMarriageSpouse,
+} from '.';
 import { CardSuit, CardSymbol, createCard } from '../runner/deck';
-import { AnnoucementType } from '../runner/player';
+import { GameMode } from '../runner/mode';
 
-describe('checkForAnnouncements()', () => {
+describe('checkForMarriageAnnouncement()', () => {
   it.each([
     { suit: CardSuit.Clubs, name: 'Clubs' },
     { suit: CardSuit.Diamonds, name: 'Diamonds' },
@@ -15,13 +20,14 @@ describe('checkForAnnouncements()', () => {
         createCard(suit, CardSymbol.Queen),
         createCard(suit, CardSymbol.King),
       ];
-      const trump = createCard(suit, CardSymbol.Ace);
 
-      const result = checkForAnnouncements(hand, trump);
-      expect(result).toEqual([AnnoucementType.Marriage]);
+      const result = checkForMarriageAnnouncement(hand);
+      expect(result).toBeTruthy();
     },
   );
+});
 
+describe('checkForNineOfTrumps()', () => {
   it.each([
     { suit: CardSuit.Clubs, name: 'Clubs' },
     { suit: CardSuit.Diamonds, name: 'Diamonds' },
@@ -31,27 +37,20 @@ describe('checkForAnnouncements()', () => {
     'should announce NineOfTrumps (swap 9 of $name from hand for deck trump)',
     ({ suit }) => {
       const hand = [createCard(suit, CardSymbol.Nine)];
-      const trump = createCard(suit, CardSymbol.Ace);
+      const context = {
+        gameMode: GameMode.Normal,
+        deck: [
+          createCard(suit, CardSymbol.Ace),
+          createCard(suit, CardSymbol.Ten),
+          createCard(suit, CardSymbol.King),
+        ],
+        trump: createCard(suit, CardSymbol.Ace),
+      };
 
-      const result = checkForAnnouncements(hand, trump);
-      expect(result).toEqual([AnnoucementType.NineOfTrumps]);
+      const result = checkForNineOfTrumps(hand, context);
+      expect(result).toBeTruthy();
     },
   );
-
-  it('should announce both Marriage and NineOfTrumps', () => {
-    const hand = [
-      createCard(CardSuit.Clubs, CardSymbol.Nine),
-      createCard(CardSuit.Clubs, CardSymbol.Queen),
-      createCard(CardSuit.Clubs, CardSymbol.King),
-    ];
-    const trump = createCard(CardSuit.Clubs, CardSymbol.Ace);
-
-    const result = checkForAnnouncements(hand, trump);
-    expect(result).toEqual([
-      AnnoucementType.Marriage,
-      AnnoucementType.NineOfTrumps,
-    ]);
-  });
 });
 
 describe('checkForSuitableCard()', () => {
@@ -97,5 +96,37 @@ describe('checkForSuitableCard()', () => {
 
     const result = checkForSuitableCard(hand, trump, oponentCard);
     expect(result).toEqual(cTen);
+  });
+});
+
+describe('findMarriageSpouse', () => {
+  it('should play the Queen of marriage', () => {
+    const sQueen = createCard(CardSuit.Spades, CardSymbol.Queen);
+    const sKing = createCard(CardSuit.Spades, CardSymbol.King);
+
+    const hand = [
+      sKing,
+      sQueen,
+      createCard(CardSuit.Spades, CardSymbol.Ace),
+      createCard(CardSuit.Spades, CardSymbol.Ten),
+    ];
+
+    const result = findMarriageSpouse(hand);
+    expect(result).toEqual(sQueen);
+  });
+
+  it('should play the first Queen that is part of marriage', () => {
+    const sQueen = createCard(CardSuit.Spades, CardSymbol.Queen);
+    const sKing = createCard(CardSuit.Spades, CardSymbol.King);
+
+    const hand = [
+      sKing,
+      createCard(CardSuit.Diamonds, CardSymbol.King),
+      sQueen,
+      createCard(CardSuit.Diamonds, CardSymbol.Queen),
+    ];
+
+    const result = findMarriageSpouse(hand);
+    expect(result).toEqual(sQueen);
   });
 });

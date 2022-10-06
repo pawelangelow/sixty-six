@@ -1,6 +1,6 @@
+import { createPlayerMock } from '../../utils/tests';
 import { deal } from '../deal';
 import { game } from '../game';
-import { createPlayer } from '../player';
 
 jest.mock('../deal', () => ({
   ...jest.requireActual('../deal'),
@@ -12,20 +12,12 @@ beforeEach(() => {
 });
 
 const createPlayers = () => {
-  const playerA = createPlayer({
-    playTrick: () => null,
+  const playerA = createPlayerMock({
     name: 'player A',
-    announceMarriage: () => false,
-    announceNineOfTrumps: () => false,
-    closeTheGame: () => false,
   });
 
-  const playerB = createPlayer({
-    playTrick: () => null,
+  const playerB = createPlayerMock({
     name: 'player B',
-    announceMarriage: () => false,
-    announceNineOfTrumps: () => false,
-    closeTheGame: () => false,
   });
 
   return { playerA, playerB };

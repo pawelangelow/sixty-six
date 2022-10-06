@@ -1,35 +1,24 @@
 import { determineWinner } from '../deal';
 import { CardSuit, CardSymbol } from '../deck';
 import { GameMode } from '../mode';
-import { createPlayer, Player } from '../player';
+import { Player } from '../player';
 import { playCard } from '../trick';
-
-const commonProps = {
-  cards: [],
-  hasWonTrick: false,
-  playTrick: () => null,
-  name: 'common',
-  gamePoints: 0,
-  announceMarriage: () => false,
-  announceNineOfTrumps: () => false,
-  closeTheGame: () => false,
-};
+import { createPlayerMock } from '../../utils/tests';
 
 describe('Deal', () => {
   describe('determineWinner()', () => {
     describe('Player A', () => {
       it('should return A as winner and 3 points (B has no tricks)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 70,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 0,
           hasWonTrick: false,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toEqual(playerA);
@@ -37,17 +26,15 @@ describe('Deal', () => {
       });
 
       it('should return A as winner and 2 points (B has tricks)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 70,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 0,
           hasWonTrick: true,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toEqual(playerA);
@@ -55,16 +42,14 @@ describe('Deal', () => {
       });
 
       it('should return A as winner and 2 points (B has 32 trick points)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 70,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 32,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toEqual(playerA);
@@ -72,16 +57,14 @@ describe('Deal', () => {
       });
 
       it('should return A as winner and 1 point (B has 33 trick points)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 70,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 33,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toEqual(playerA);
@@ -91,17 +74,15 @@ describe('Deal', () => {
 
     describe('Player B', () => {
       it('should return B as winner and 3 points (A has no tricks)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 0,
           hasWonTrick: false,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 70,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toEqual(playerB);
@@ -109,17 +90,15 @@ describe('Deal', () => {
       });
 
       it('should return B as winner and 2 points (A has tricks)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 0,
           hasWonTrick: true,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 70,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toEqual(playerB);
@@ -127,16 +106,14 @@ describe('Deal', () => {
       });
 
       it('should return B as winner and 2 points (A has 32 trick points)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 32,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 70,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toEqual(playerB);
@@ -144,16 +121,14 @@ describe('Deal', () => {
       });
 
       it('should return B as winner and 1 point (A has 33 trick points)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 33,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 70,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toEqual(playerB);
@@ -163,16 +138,14 @@ describe('Deal', () => {
 
     describe('draw', () => {
       it('should display no winner (both > 66)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 70,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 70,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toBeFalsy();
@@ -180,16 +153,14 @@ describe('Deal', () => {
       });
 
       it('should display no winner (nobody > 66)', () => {
-        const playerA: Player = {
-          ...commonProps,
+        const playerA: Player = createPlayerMock({
           name: 'Player A',
           points: 40,
-        };
-        const playerB: Player = {
-          ...commonProps,
+        });
+        const playerB: Player = createPlayerMock({
           name: 'Player B',
           points: 40,
-        };
+        });
 
         const { winner, points } = determineWinner(playerA, playerB);
         expect(winner).toBeFalsy();
@@ -201,8 +172,7 @@ describe('Deal', () => {
   describe('playCard()', () => {
     describe('first player', () => {
       const playTrick = jest.fn();
-      const player = createPlayer({
-        ...commonProps,
+      const player = createPlayerMock({
         playTrick,
         name: 'Bot',
       });
@@ -228,8 +198,7 @@ describe('Deal', () => {
 
     describe('second player', () => {
       const playTrick = jest.fn();
-      const player = createPlayer({
-        ...commonProps,
+      const player = createPlayerMock({
         playTrick,
         name: 'Bot',
       });

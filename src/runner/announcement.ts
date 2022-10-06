@@ -1,3 +1,4 @@
+import { debug } from '../utils/logger';
 import { Card, CardSymbol, isDepleted } from './deck';
 
 export const isRoyalMarriage = (trump: Card, spouse: Card): boolean =>
@@ -29,17 +30,18 @@ export const validateMarriage = (spouse: Card, hand: Card[]): void => {
 };
 
 export const calculateMarriageBonus = ({ spouse, hand, trump }): number => {
+  debug('Init marriage. Players card: ', spouse.toString());
+
   validateMarriage(spouse, hand);
 
-  return isRoyalMarriage(trump, spouse) ? 40 : 20;
+  const result = isRoyalMarriage(trump, spouse) ? 40 : 20;
+
+  debug(`Result: adding ${result} points`);
+
+  return result;
 };
 
-export const validateNineOfTrumps = ({
-  hand,
-  trump,
-  deck,
-  playedCard,
-}): void => {
+export const validateNineOfTrumps = ({ hand, trump, deck }): void => {
   if (
     !hand.find(
       (card: Card) =>
@@ -47,10 +49,6 @@ export const validateNineOfTrumps = ({
     )
   ) {
     throw new Error('Cheating! You dont have this card!');
-  }
-
-  if (playedCard.suit === trump.suit && playedCard.symbol === CardSymbol.Nine) {
-    throw new Error('Cheating! You cant play swapped 9!');
   }
 
   if (isDepleted(deck)) {

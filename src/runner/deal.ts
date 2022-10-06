@@ -1,12 +1,9 @@
+import { debug } from '../utils/logger';
 import { Card, createDeck, shuttleDeck } from './deck';
 import { GameMode } from './mode';
 import { Player } from './player';
 import { playTrick } from './trick';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const debug = (...args) => {
-  // return console.log(...args);
-};
 export interface DealProps {
   playerA: Player;
   playerB: Player;
@@ -24,6 +21,7 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
   const trumpCard = getTrump(deck);
 
+  debug('='.repeat(30));
   debug('trump is: ', trumpCard.toString());
 
   // Trick
@@ -54,6 +52,8 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
   // Last trick gives +10 points to the winner
   first.points += 10;
+
+  debug('='.repeat(30));
 
   const result = determineWinner(first, second);
   notifyPlayer(first, result.winner?.name);

@@ -1,14 +1,21 @@
+import { debug } from '../utils/logger';
 import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
 import { Card, CardSymbol } from './deck';
 import { GameMode, validateClosing } from './mode';
 import { validatePlay } from './play';
 import { AnnoucementType, Player, TickContext } from './player';
 
-const debug = console.log;
-
 export interface TrickResult {
   winner: Player;
   loser: Player;
+}
+
+interface PlayTrickProps {
+  first: Player;
+  second: Player;
+  gameMode: GameMode;
+  trump: Card;
+  deck: Card[];
 }
 
 export const playTrick = ({
@@ -17,52 +24,40 @@ export const playTrick = ({
   gameMode,
   trump,
   deck,
-}): TrickResult => {
-  const {
-    card: firstCard,
-    announcements,
-    closingGame,
-  } = playCard(first, { gameMode, trump });
+}: PlayTrickProps): TrickResult => {
+  let isMarriageAnnounced = false;
+  let isGameClosing = false;
+  const oponentAnnouncements = [];
+
+  const trickContext = {
+    gameMode,
+    trump,
+    deck,
+  };
 
   if (first.hasWonTrick) {
-    if (announcements?.includes(AnnoucementType.NineOfTrumps)) {
-      try {
-        validateNineOfTrumps({
-          hand: first.cards,
-          trump,
-          deck,
-          playedCard: firstCard,
-        });
+    const isAnnouncingNineOfTrumps = first.announceNineOfTrumps(
+      first.cards,
+      trickContext,
+    );
 
-        debug('Swapping 9 for other card. Trump: ', trump.toString());
-        debug(`Players hand before: ${first.cards.join(', ')}`);
-        const exchangedTrump = deck.pop();
-        const nineOfTrumps = first.cards.find(
-          (card) => card.symbol === CardSymbol.Nine && card.suit === trump.suit,
-        );
-        first.cards = first.cards.filter(
-          (card) =>
-            !(card.symbol === CardSymbol.Nine && card.suit === trump.suit),
-        );
-        first.cards.push(exchangedTrump);
-        debug(`Players hand after: ${first.cards.join(', ')}`);
-        deck.push(nineOfTrumps);
-      } catch (err) {}
+    if (isAnnouncingNineOfTrumps) {
+      swapNineOfTrumps({ player: first, deck, trump });
+      oponentAnnouncements.push(AnnoucementType.NineOfTrumps);
     }
 
-    if (announcements?.includes(AnnoucementType.Marriage)) {
-      try {
-        first.points += calculateMarriageBonus({
-          spouse: firstCard,
-          hand: first.cards,
-          trump,
-        });
-      } catch (err) {}
+    isMarriageAnnounced = first.announceMarriage(first.cards, trickContext);
+
+    if (gameMode === GameMode.Closed) {
+      isMarriageAnnounced = false;
+      // TODO: Notify player that this is forbidden
     }
+
+    isGameClosing = first.closeTheGame(first.cards, trickContext);
 
     // The closing player can meld a marriage immediately before closing,
     // but no marriages can be melded in subsequent tricks.
-    if (closingGame) {
+    if (isGameClosing) {
       try {
         validateClosing(deck);
         gameMode = GameMode.Closed;
@@ -70,11 +65,24 @@ export const playTrick = ({
     }
   }
 
-  const { card: secondCard } = playCard(second, {
+  const firstCard = playCard(first, trickContext);
+
+  if (isMarriageAnnounced) {
+    try {
+      first.points += calculateMarriageBonus({
+        spouse: firstCard,
+        hand: first.cards,
+        trump,
+      });
+      oponentAnnouncements.push(AnnoucementType.Marriage);
+    } catch (err) {}
+  }
+
+  const secondCard = playCard(second, {
+    ...trickContext,
     oponentCard: firstCard,
-    oponentAnnouncements: announcements,
-    gameMode,
-    trump,
+    oponentAnnouncements:
+      oponentAnnouncements.length > 0 ? oponentAnnouncements : null,
   });
 
   const { winnerCard, points } = calculateTrick({
@@ -87,7 +95,7 @@ export const playTrick = ({
   first.cards = first.cards.filter((card) => card !== firstCard);
   second.cards = second.cards.filter((card) => card !== secondCard);
 
-  // Determine who is first on the next round
+  // Determine who is leader on the next round
   const previousFirst = first;
   const winner = winnerCard === firstCard ? first : second;
   const loser = winnerCard === firstCard ? second : previousFirst;
@@ -105,18 +113,41 @@ export const playTrick = ({
   };
 };
 
-export const playCard = (player: Player, context: TickContext) => {
+const swapNineOfTrumps = ({ player, deck, trump }) => {
+  try {
+    debug('Init swap Nine of Trumps');
+
+    validateNineOfTrumps({
+      hand: player.cards,
+      trump,
+      deck,
+    });
+
+    debug('Swapping 9 for other card. Trump: ', trump.toString());
+    debug(`Players hand before: ${player.cards.join(', ')}`);
+
+    const exchangedTrump = deck.pop();
+    const nineOfTrumps = player.cards.find(
+      (card) => card.symbol === CardSymbol.Nine && card.suit === trump.suit,
+    );
+    player.cards = player.cards.filter(
+      (card) => !(card.symbol === CardSymbol.Nine && card.suit === trump.suit),
+    );
+    player.cards.push(exchangedTrump);
+
+    debug(`Players hand after: ${player.cards.join(', ')}`);
+    deck.push(nineOfTrumps);
+  } catch (err) {
+    debug('Error', err);
+  }
+};
+
+export const playCard = (player: Player, context: TickContext): Card => {
   let card;
-  let announcements;
-  let closingGame;
   let attempts = 0;
 
   do {
-    const {
-      card: playerCard,
-      announcements: playerAnnouncements,
-      closingGame: playerClosingGame,
-    } = player.playTrick(player.cards, context);
+    const playersCard = player.playTrick(player.cards, context);
 
     attempts++;
     if (attempts === 10) {
@@ -125,19 +156,17 @@ export const playCard = (player: Player, context: TickContext) => {
 
     try {
       validatePlay({
-        card: playerCard,
+        card: playersCard,
         trump: context.trump,
         gameMode: context.gameMode,
         hand: player.cards,
       });
 
-      card = playerCard;
-      announcements = playerAnnouncements;
-      closingGame = playerClosingGame;
+      card = playersCard;
     } catch (err) {}
   } while (!card);
 
-  return { card, announcements, closingGame };
+  return card;
 };
 
 export const calculateTrick = ({

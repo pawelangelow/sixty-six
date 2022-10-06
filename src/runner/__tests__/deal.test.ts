@@ -10,6 +10,9 @@ const commonProps = {
   playTrick: () => null,
   name: 'common',
   gamePoints: 0,
+  announceMarriage: () => false,
+  announceNineOfTrumps: () => false,
+  closeTheGame: () => false,
 };
 
 describe('Deal', () => {
@@ -199,6 +202,7 @@ describe('Deal', () => {
     describe('first player', () => {
       const playTrick = jest.fn();
       const player = createPlayer({
+        ...commonProps,
         playTrick,
         name: 'Bot',
       });
@@ -214,6 +218,7 @@ describe('Deal', () => {
           playCard(player, {
             gameMode: GameMode.Closed,
             trump: { suit: CardSuit.Clubs, symbol: CardSymbol.Ace },
+            deck: [],
           });
         };
 
@@ -224,6 +229,7 @@ describe('Deal', () => {
     describe('second player', () => {
       const playTrick = jest.fn();
       const player = createPlayer({
+        ...commonProps,
         playTrick,
         name: 'Bot',
       });
@@ -240,6 +246,7 @@ describe('Deal', () => {
             gameMode: GameMode.Normal,
             trump: { suit: CardSuit.Clubs, symbol: CardSymbol.Ace },
             oponentCard: { suit: CardSuit.Hearts, symbol: CardSymbol.Ace },
+            deck: [],
           });
         };
 

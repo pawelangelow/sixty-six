@@ -10,7 +10,7 @@ export interface TrickResult {
   loser: Player;
 }
 
-interface PlayTrickProps {
+interface RunTrickProps {
   first: Player;
   second: Player;
   gameMode: GameMode;
@@ -18,13 +18,13 @@ interface PlayTrickProps {
   deck: Card[];
 }
 
-export const playTrick = ({
+export const runTrick = ({
   first,
   second,
   gameMode,
   trump,
   deck,
-}: PlayTrickProps): TrickResult => {
+}: RunTrickProps): TrickResult => {
   let isMarriageAnnounced = false;
   let isGameClosing = false;
   const oponentAnnouncements = [];

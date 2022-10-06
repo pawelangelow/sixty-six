@@ -2,7 +2,7 @@ import { debug } from '../utils/logger';
 import { Card, createDeck, shuttleDeck } from './deck';
 import { GameMode } from './mode';
 import { Player } from './player';
-import { playTrick } from './trick';
+import { runTrick } from './trick';
 
 export interface DealProps {
   playerA: Player;
@@ -26,7 +26,7 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
 
   // Trick
   while (first.cards.length !== 0) {
-    const { winner, loser } = playTrick({
+    const { winner, loser } = runTrick({
       first,
       second,
       gameMode,

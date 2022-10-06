@@ -1,6 +1,6 @@
-import { Card, CardSuit, CardSymbol } from '../runner/deck';
-import { GameMode } from '../runner/mode';
-import { createPlayer, TickContext } from '../runner/player';
+import { Card, CardSuit, CardSymbol } from '../engine/deck';
+import { GameMode } from '../engine/mode';
+import { createPlayer, TickContext } from '../engine/player';
 
 // TODO: Export types
 export const createDummyPlater = (name) => {

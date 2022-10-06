@@ -4,8 +4,8 @@ import {
   checkForSuitableCard,
   findMarriageSpouse,
 } from '.';
-import { CardSuit, CardSymbol, createCard } from '../runner/deck';
-import { GameMode } from '../runner/mode';
+import { CardSuit, CardSymbol, createCard } from '../engine/deck';
+import { GameMode } from '../engine/mode';
 
 describe('checkForMarriageAnnouncement()', () => {
   it.each([

@@ -4,7 +4,7 @@
   "scripts": {
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
-    "start:runner": "ts-node src/runner/index.ts",
+    "start:engine": "ts-node src/engine/index.ts",
     "test": "jest"
   },
   "husky": {

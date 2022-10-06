@@ -1,4 +1,4 @@
-import { createPlayer, Player } from '../runner/player';
+import { createPlayer, Player } from '../engine/player';
 
 export const createPlayerMock = (props: Partial<Player>) => {
   const player = createPlayer({

@@ -1,5 +1,47 @@
-import { CardSuit, CardSymbol } from '../deck';
-import { calculateTrick } from '../trick';
+import { createPlayerMock } from '../../utils/tests';
+import { CardSuit, CardSymbol, createCard } from '../deck';
+import { GameMode } from '../mode';
+import { calculateTrick, runTrick } from '../trick';
+
+describe('runTrick()', () => {
+  it('should allow swapping nine of trumps and marriage announcement', () => {
+    const trump = createCard(CardSuit.Hearts, CardSymbol.Queen);
+
+    const deck = [
+      createCard(CardSuit.Clubs, CardSymbol.Ace),
+      createCard(CardSuit.Clubs, CardSymbol.Ace),
+      createCard(CardSuit.Clubs, CardSymbol.Ace),
+      trump,
+    ];
+
+    const playTrick = jest.fn((cards) => cards[0]);
+
+    const { winner } = runTrick({
+      deck,
+      first: createPlayerMock({
+        name: 'A',
+        playTrick,
+        cards: [
+          createCard(CardSuit.Hearts, CardSymbol.Nine),
+          createCard(CardSuit.Hearts, CardSymbol.King),
+        ],
+        announceNineOfTrumps: () => true,
+        announceMarriage: () => true,
+        hasWonTrick: true,
+      }),
+      second: createPlayerMock({
+        name: 'B',
+        playTrick: (cards) => cards[0],
+        cards: [createCard(CardSuit.Hearts, CardSymbol.Jack)],
+      }),
+      gameMode: GameMode.Normal,
+      trump: trump,
+    });
+
+    expect(winner.name).toEqual('A');
+    expect(winner.points).toEqual(46); // 40 marriage + 4 king + 2 jack
+  });
+});
 
 describe('Trick calculation', () => {
   describe('non-trump, suit is followed', () => {

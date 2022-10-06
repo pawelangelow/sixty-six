@@ -75,7 +75,9 @@ export const runTrick = ({
         trump,
       });
       oponentAnnouncements.push(AnnoucementType.Marriage);
-    } catch (err) {}
+    } catch (err) {
+      debug('Marriage failed:', err.message);
+    }
   }
 
   const secondCard = playCard(second, {

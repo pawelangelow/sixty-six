@@ -13,13 +13,17 @@ export interface GameResult {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getFirstPlayer = (a: Player, b: Player): Player => a;
 
+const clearUsers = (a: Player, b: Player): void => {
+  a.reset();
+  b.reset();
+};
+
 export const game = ({ playerA, playerB }: GameProps): GameResult => {
   let firstToPlay = getFirstPlayer(playerA, playerB);
   let pendingPoints = 0;
 
   while (playerA.gamePoints < 7 && playerB.gamePoints < 7) {
-    playerA.points = 0;
-    playerB.points = 0;
+    clearUsers(playerA, playerB);
 
     const { winner, points } = deal({ playerA, playerB, firstToPlay });
 

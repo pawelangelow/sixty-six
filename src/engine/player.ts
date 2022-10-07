@@ -31,6 +31,7 @@ export interface Player extends BotAPI {
   points: number;
   hasWonTrick: boolean;
   gamePoints: number;
+  reset: () => void;
 }
 
 export const createPlayer = (api: BotAPI) => ({
@@ -39,4 +40,8 @@ export const createPlayer = (api: BotAPI) => ({
   points: 0,
   hasWonTrick: false,
   gamePoints: 0,
+  reset: function () {
+    this.points = 0;
+    this.hasWonTrick = false;
+  },
 });

@@ -16,6 +16,7 @@ interface RunTrickProps {
   gameMode: GameMode;
   trump: Card;
   deck: Card[];
+  closeGame: (player?: Player) => void;
 }
 
 export const runTrick = ({
@@ -24,6 +25,7 @@ export const runTrick = ({
   gameMode,
   trump,
   deck,
+  closeGame,
 }: RunTrickProps): TrickResult => {
   let isMarriageAnnounced = false;
   let isGameClosing = false;
@@ -57,11 +59,15 @@ export const runTrick = ({
 
     // The closing player can meld a marriage immediately before closing,
     // but no marriages can be melded in subsequent tricks.
-    if (isGameClosing) {
+    if (gameMode === GameMode.Normal && isGameClosing) {
       try {
+        debug('Initiate closing game');
         validateClosing(deck);
-        gameMode = GameMode.Closed;
-      } catch (err) {}
+        closeGame(first);
+        debug('Game is closed now');
+      } catch (err) {
+        debug('Closing game error:', err.message);
+      }
     }
   }
 

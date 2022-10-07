@@ -13,6 +13,15 @@ export interface DealProps {
 export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const deck = shuttleDeck(createDeck());
   let gameMode = GameMode.Normal;
+  let whoClosedTheGame = null;
+
+  const closeGame = (player?: Player) => {
+    gameMode = GameMode.Closed;
+
+    if (player) {
+      whoClosedTheGame = player;
+    }
+  };
 
   let first: Player = firstToPlay === playerA ? playerA : playerB;
   let second: Player = firstToPlay === playerA ? playerB : playerA;
@@ -32,18 +41,19 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
       gameMode,
       trump: trumpCard,
       deck,
+      closeGame,
     });
 
     first = winner;
     second = loser;
 
-    if (deck.length !== 0) {
+    if (gameMode === GameMode.Normal) {
       drawCards(first, second, deck);
     }
 
     // Deck is depleted, going to closed game mode
     if (!deck.length && gameMode === GameMode.Normal) {
-      gameMode = GameMode.Closed;
+      closeGame();
       debug('Game is now in Closed state');
     }
 
@@ -51,11 +61,14 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   }
 
   // Last trick gives +10 points to the winner
-  first.points += 10;
+  if (!whoClosedTheGame) {
+    debug(first.name, ' gets additional 10 points');
+    first.points += 10;
+  }
 
   debug('='.repeat(30));
 
-  const result = determineWinner(first, second);
+  const result = determineWinner(first, second, whoClosedTheGame);
   notifyPlayer(first, result.winner?.name);
   notifyPlayer(second, result.winner?.name);
   return result;
@@ -107,11 +120,29 @@ const calculateDealPoints = (loser: Player): number => {
 };
 
 const WINNING_POINTS = 66;
+const CLOSING_GAME_PENALTY_POINTS = 2;
+const CLOSING_GAME_PENALTY_POINTS_NO_TRICK = 3;
 
 export const determineWinner = (
   a: Player,
   b: Player,
+  whoClosedTheGame: Player | null,
 ): { winner: Player | null; points: number } => {
+  if (whoClosedTheGame) {
+    const oponent = whoClosedTheGame === a ? b : a;
+
+    if (whoClosedTheGame.points >= WINNING_POINTS) {
+      return { winner: whoClosedTheGame, points: calculateDealPoints(oponent) };
+    }
+
+    if (!oponent.hasWonTrick) {
+      debug('Closing game gone wrong: worst scenario');
+      return { winner: oponent, points: CLOSING_GAME_PENALTY_POINTS_NO_TRICK };
+    }
+
+    debug('Closing game gone wrong');
+    return { winner: oponent, points: CLOSING_GAME_PENALTY_POINTS };
+  }
   // If neither player scores 66, or each has scored 66 or more without announcing it,
   // no one scores in that hand and 1 game point is added to the score of the winner of the next hand.
   if (

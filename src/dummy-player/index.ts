@@ -1,18 +1,18 @@
 import { Card, CardSuit, CardSymbol } from '../engine/deck';
 import { GameMode } from '../engine/mode';
-import { createPlayer, TickContext } from '../engine/player';
+import { createPlayer, TrickContext } from '../engine/player';
 
 // TODO: Export types
 export const createDummyPlater = (name) => {
   let gameMode = GameMode.Normal;
 
   return createPlayer({
-    announceNineOfTrumps: (cards: Card[], context: TickContext) =>
+    announceNineOfTrumps: (cards: Card[], context: TrickContext) =>
       checkForNineOfTrumps(cards, context),
 
     announceMarriage: (cards: Card[]) => checkForMarriageAnnouncement(cards),
 
-    playTrick: (cards: Card[], { trump, oponentCard }: TickContext) => {
+    playTrick: (cards: Card[], { trump, oponentCard }: TrickContext) => {
       if (checkForMarriageAnnouncement(cards)) {
         return findMarriageSpouse(cards);
       }
@@ -68,7 +68,7 @@ export const checkForMarriageAnnouncement = (hand: Card[]) =>
 
 export const checkForNineOfTrumps = (
   hand: Card[],
-  { trump, gameMode, deck }: TickContext,
+  { trump, gameMode, deck }: TrickContext,
 ) =>
   gameMode === GameMode.Normal &&
   deck.length > 2 &&

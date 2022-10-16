@@ -3,7 +3,7 @@ import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
 import { Card, CardSymbol } from './deck';
 import { GameMode, validateClosing } from './mode';
 import { validatePlay } from './play';
-import { AnnoucementType, Player, TickContext } from './player';
+import { AnnoucementType, Player, TrickContext } from './player';
 
 export interface TrickResult {
   winner: Player;
@@ -153,7 +153,7 @@ const swapNineOfTrumps = ({ player, deck, trump }) => {
   }
 };
 
-export const playCard = (player: Player, context: TickContext): Card => {
+export const playCard = (player: Player, context: TrickContext): Card => {
   let card;
   let attempts = 0;
 

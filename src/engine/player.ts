@@ -10,7 +10,7 @@ export type Annoucement =
   | AnnoucementType.Marriage
   | AnnoucementType.NineOfTrumps;
 
-export interface TickContext {
+export interface TrickContext {
   oponentCard?: Card;
   oponentAnnouncements?: Annoucement[];
   gameMode: GameMode;
@@ -19,10 +19,10 @@ export interface TickContext {
 }
 
 export interface BotAPI {
-  playTrick: (cards: Card[], tickContext: TickContext) => Card;
-  announceNineOfTrumps: (cards: Card[], tickContext: TickContext) => boolean;
-  announceMarriage: (cards: Card[], tickContext: TickContext) => boolean;
-  closeTheGame: (cards: Card[], tickContext: TickContext) => boolean;
+  playTrick: (cards: Card[], trickContext: TrickContext) => Card;
+  announceNineOfTrumps: (cards: Card[], trickContext: TrickContext) => boolean;
+  announceMarriage: (cards: Card[], trickContext: TrickContext) => boolean;
+  closeTheGame: (cards: Card[], trickContext: TrickContext) => boolean;
   goOut: () => boolean;
   onFinishGame?: (winnerName: string) => void;
   name: string;

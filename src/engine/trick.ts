@@ -17,6 +17,7 @@ interface RunTrickProps {
   trump: Card;
   deck: Card[];
   closeGame: (player?: Player) => void;
+  goOut: (player: Player) => void;
 }
 
 export const runTrick = ({
@@ -26,6 +27,7 @@ export const runTrick = ({
   trump,
   deck,
   closeGame,
+  goOut,
 }: RunTrickProps): TrickResult => {
   let isMarriageAnnounced = false;
   let isGameClosing = false;
@@ -81,6 +83,7 @@ export const runTrick = ({
         trump,
       });
       oponentAnnouncements.push(AnnoucementType.Marriage);
+      goOut(first);
     } catch (err) {
       debug('Marriage failed:', err.message);
     }

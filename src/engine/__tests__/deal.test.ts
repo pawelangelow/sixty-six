@@ -22,11 +22,12 @@ describe('Deal', () => {
           hasWonTrick: false,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerA);
         expect(points).toEqual(3);
       });
@@ -42,11 +43,12 @@ describe('Deal', () => {
           hasWonTrick: true,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerA);
         expect(points).toEqual(2);
       });
@@ -61,11 +63,12 @@ describe('Deal', () => {
           points: 32,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerA);
         expect(points).toEqual(2);
       });
@@ -80,11 +83,12 @@ describe('Deal', () => {
           points: 33,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerA);
         expect(points).toEqual(1);
       });
@@ -102,11 +106,12 @@ describe('Deal', () => {
           points: 70,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerB);
         expect(points).toEqual(3);
       });
@@ -122,11 +127,12 @@ describe('Deal', () => {
           points: 70,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerB);
         expect(points).toEqual(2);
       });
@@ -141,11 +147,12 @@ describe('Deal', () => {
           points: 70,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerB);
         expect(points).toEqual(2);
       });
@@ -160,11 +167,12 @@ describe('Deal', () => {
           points: 70,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerB);
         expect(points).toEqual(1);
       });
@@ -181,11 +189,12 @@ describe('Deal', () => {
           points: 70,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toBeFalsy();
         expect(points).toEqual(1);
       });
@@ -200,11 +209,12 @@ describe('Deal', () => {
           points: 40,
         });
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toBeFalsy();
         expect(points).toEqual(1);
       });
@@ -225,11 +235,12 @@ describe('Deal', () => {
 
         const whoClosedTheGame = playerA;
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerB);
         expect(points).toEqual(3);
       });
@@ -248,13 +259,109 @@ describe('Deal', () => {
 
         const whoClosedTheGame = playerA;
 
-        const { winner, points } = determineWinner(
-          playerA,
-          playerB,
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
           whoClosedTheGame,
-        );
+          whoIsGoingOut: null,
+        });
         expect(winner).toEqual(playerB);
         expect(points).toEqual(2);
+      });
+    });
+
+    describe('going out', () => {
+      it('player A is going out and has enough points', () => {
+        const playerA: Player = createPlayerMock({
+          name: 'Player A',
+          points: 66,
+        });
+
+        const playerB: Player = createPlayerMock({
+          name: 'Player B',
+          points: 0,
+        });
+
+        const whoIsGoingOut = playerA;
+
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
+          whoClosedTheGame: null,
+          whoIsGoingOut,
+        });
+        expect(winner).toEqual(playerA);
+        expect(points).toEqual(3);
+      });
+
+      it('player A is going out but has not enough points (33<points<66)', () => {
+        const playerA: Player = createPlayerMock({
+          name: 'Player A',
+          points: 65,
+        });
+
+        const playerB: Player = createPlayerMock({
+          name: 'Player B',
+          points: 0,
+        });
+
+        const whoIsGoingOut = playerA;
+
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
+          whoClosedTheGame: null,
+          whoIsGoingOut,
+        });
+        expect(winner).toEqual(playerB);
+        expect(points).toEqual(1);
+      });
+
+      it('player A is going out but has not enough points (points<33)', () => {
+        const playerA: Player = createPlayerMock({
+          name: 'Player A',
+          points: 32,
+        });
+
+        const playerB: Player = createPlayerMock({
+          name: 'Player B',
+          points: 0,
+        });
+
+        const whoIsGoingOut = playerA;
+
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
+          whoClosedTheGame: null,
+          whoIsGoingOut,
+        });
+        expect(winner).toEqual(playerB);
+        expect(points).toEqual(2);
+      });
+
+      it('player A is going out but has not enough points (no tricks)', () => {
+        const playerA: Player = createPlayerMock({
+          name: 'Player A',
+          points: 0,
+          hasWonTrick: false,
+        });
+
+        const playerB: Player = createPlayerMock({
+          name: 'Player B',
+          points: 0,
+        });
+
+        const whoIsGoingOut = playerA;
+
+        const { winner, points } = determineWinner({
+          first: playerA,
+          second: playerB,
+          whoClosedTheGame: null,
+          whoIsGoingOut,
+        });
+        expect(winner).toEqual(playerB);
+        expect(points).toEqual(3);
       });
     });
   });

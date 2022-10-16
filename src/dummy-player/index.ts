@@ -26,6 +26,8 @@ export const createDummyPlater = (name) => {
 
     closeTheGame: () => false,
 
+    goOut: () => false,
+
     onFinishGame: () => {
       gameMode = GameMode.Normal;
     },

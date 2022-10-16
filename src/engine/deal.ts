@@ -14,6 +14,7 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   const deck = shuttleDeck(createDeck());
   let gameMode = GameMode.Normal;
   let whoClosedTheGame = null;
+  let whoIsGoingOut = null;
 
   const closeGame = (player?: Player) => {
     gameMode = GameMode.Closed;
@@ -21,6 +22,10 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
     if (player) {
       whoClosedTheGame = player;
     }
+  };
+
+  const goOut = (player: Player) => {
+    whoIsGoingOut = player;
   };
 
   let first: Player = firstToPlay === playerA ? playerA : playerB;
@@ -34,7 +39,9 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   debug('trump is: ', trumpCard.toString());
 
   // Trick
-  while (first.cards.length !== 0) {
+  while (first.cards.length !== 0 && !whoIsGoingOut) {
+    whoIsGoingOut = isSomeoneGoingOut(first, second);
+
     const { winner, loser } = runTrick({
       first,
       second,
@@ -42,6 +49,7 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
       trump: trumpCard,
       deck,
       closeGame,
+      goOut,
     });
 
     first = winner;
@@ -61,14 +69,19 @@ export const deal = ({ firstToPlay, playerA, playerB }: DealProps) => {
   }
 
   // Last trick gives +10 points to the winner
-  if (!whoClosedTheGame) {
+  if (!whoClosedTheGame && !whoIsGoingOut) {
     debug(first.name, ' gets additional 10 points');
     first.points += 10;
   }
 
   debug('='.repeat(30));
 
-  const result = determineWinner(first, second, whoClosedTheGame);
+  const result = determineWinner({
+    first,
+    second,
+    whoClosedTheGame,
+    whoIsGoingOut,
+  });
   notifyPlayer(first, result.winner?.name);
   notifyPlayer(second, result.winner?.name);
   return result;
@@ -123,11 +136,27 @@ const WINNING_POINTS = 66;
 const CLOSING_GAME_PENALTY_POINTS = 2;
 const CLOSING_GAME_PENALTY_POINTS_NO_TRICK = 3;
 
-export const determineWinner = (
-  a: Player,
-  b: Player,
-  whoClosedTheGame: Player | null,
-): { winner: Player | null; points: number } => {
+export const determineWinner = ({
+  first: a,
+  second: b,
+  whoClosedTheGame,
+  whoIsGoingOut,
+}: {
+  first: Player;
+  second: Player;
+  whoClosedTheGame: Player | null;
+  whoIsGoingOut: Player | null;
+}): { winner: Player | null; points: number } => {
+  if (whoIsGoingOut) {
+    const oponent = whoIsGoingOut === a ? b : a;
+
+    if (whoIsGoingOut.points >= WINNING_POINTS) {
+      return { winner: whoIsGoingOut, points: calculateDealPoints(oponent) };
+    }
+
+    return { winner: oponent, points: calculateDealPoints(whoIsGoingOut) };
+  }
+
   if (whoClosedTheGame) {
     const oponent = whoClosedTheGame === a ? b : a;
 
@@ -143,6 +172,7 @@ export const determineWinner = (
     debug('Closing game gone wrong');
     return { winner: oponent, points: CLOSING_GAME_PENALTY_POINTS };
   }
+
   // If neither player scores 66, or each has scored 66 or more without announcing it,
   // no one scores in that hand and 1 game point is added to the score of the winner of the next hand.
   if (
@@ -157,4 +187,16 @@ export const determineWinner = (
   }
 
   return { winner: b, points: calculateDealPoints(a) };
+};
+
+const isSomeoneGoingOut = (a: Player, b: Player): Player | null => {
+  if (a.goOut && a.goOut()) {
+    return a;
+  }
+
+  if (b.goOut && b.goOut()) {
+    return b;
+  }
+
+  return null;
 };

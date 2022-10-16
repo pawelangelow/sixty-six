@@ -37,6 +37,7 @@ describe('runTrick()', () => {
       gameMode: GameMode.Normal,
       trump: trump,
       closeGame: () => null,
+      goOut: () => null,
     });
 
     expect(winner.name).toEqual('A');

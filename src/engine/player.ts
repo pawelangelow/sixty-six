@@ -23,6 +23,7 @@ export interface BotAPI {
   announceNineOfTrumps: (cards: Card[], tickContext: TickContext) => boolean;
   announceMarriage: (cards: Card[], tickContext: TickContext) => boolean;
   closeTheGame: (cards: Card[], tickContext: TickContext) => boolean;
+  goOut: () => boolean;
   onFinishGame?: (winnerName: string) => void;
   name: string;
 }

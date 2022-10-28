@@ -18,6 +18,16 @@ export interface TrickContext {
   deck: Card[];
 }
 
+export interface TrickCompletedResult {
+  anouncements: Annoucement[];
+  gameMode: GameMode;
+  trump: Card;
+  firstPlayerCard: Card;
+  secondPlayerCard: Card;
+  winnerName: string;
+  trickPoints: number;
+}
+
 export interface BotAPI {
   playTrick: (cards: Card[], trickContext: TrickContext) => Card;
   announceNineOfTrumps: (cards: Card[], trickContext: TrickContext) => boolean;
@@ -25,6 +35,7 @@ export interface BotAPI {
   closeTheGame: (cards: Card[], trickContext: TrickContext) => boolean;
   goOut: () => boolean;
   onFinishGame?: (winnerName: string) => void;
+  onTrickDone?: (result: TrickCompletedResult) => void;
   name: string;
 }
 export interface Player extends BotAPI {

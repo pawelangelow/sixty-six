@@ -5,6 +5,7 @@ import { createPlayer, TrickContext } from '../engine/player';
 // TODO: Export types
 export const createDummyPlater = (name) => {
   let gameMode = GameMode.Normal;
+  let points = 0;
 
   return createPlayer({
     announceNineOfTrumps: (cards: Card[], context: TrickContext) =>
@@ -26,10 +27,17 @@ export const createDummyPlater = (name) => {
 
     closeTheGame: () => false,
 
-    goOut: () => false,
+    goOut: () => points >= 66,
 
     onFinishGame: () => {
       gameMode = GameMode.Normal;
+      points = 0;
+    },
+
+    onTrickDone: ({ winnerName, trickPoints }) => {
+      if (winnerName === name) {
+        points += trickPoints;
+      }
     },
 
     name,

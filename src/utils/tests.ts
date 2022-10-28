@@ -8,6 +8,7 @@ export const createPlayerMock = (props: Partial<Player>) => {
     closeTheGame: () => false,
     playTrick: () => null,
     goOut: () => false,
+    onTrickDone: () => null,
   });
 
   return {

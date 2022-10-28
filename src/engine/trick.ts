@@ -3,7 +3,12 @@ import { calculateMarriageBonus, validateNineOfTrumps } from './announcement';
 import { Card, CardSymbol } from './deck';
 import { GameMode, validateClosing } from './mode';
 import { validatePlay } from './play';
-import { AnnoucementType, Player, TrickContext } from './player';
+import {
+  AnnoucementType,
+  Player,
+  TrickCompletedResult,
+  TrickContext,
+} from './player';
 
 export interface TrickResult {
   winner: Player;
@@ -118,6 +123,16 @@ export const runTrick = ({
     `${firstCard} - ${secondCard} | winner is ${first.name}, + ${points} (total: ${first.points})`,
   );
 
+  announceTrickResult(winner, loser, {
+    firstPlayerCard: firstCard,
+    secondPlayerCard: secondCard,
+    gameMode: trickContext.gameMode,
+    anouncements: oponentAnnouncements,
+    trickPoints: points,
+    trump: trickContext.trump,
+    winnerName: winner.name,
+  });
+
   return {
     winner,
     loser,
@@ -227,4 +242,13 @@ export const calculateTrick = ({
     loserCard,
     points: firstCard.symbol + secondCard.symbol,
   };
+};
+
+export const announceTrickResult = (
+  winner: Player,
+  loser: Player,
+  result: TrickCompletedResult,
+) => {
+  winner.onTrickDone(result);
+  loser.onTrickDone(result);
 };

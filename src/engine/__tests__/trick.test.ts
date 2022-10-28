@@ -1,6 +1,7 @@
 import { createPlayerMock } from '../../utils/tests';
 import { CardSuit, CardSymbol, createCard } from '../deck';
 import { GameMode } from '../mode';
+import { AnnoucementType } from '../player';
 import { calculateTrick, runTrick } from '../trick';
 
 describe('runTrick()', () => {
@@ -42,6 +43,95 @@ describe('runTrick()', () => {
 
     expect(winner.name).toEqual('A');
     expect(winner.points).toEqual(46); // 40 marriage + 4 king + 2 jack
+  });
+});
+
+describe('onTrickDone()', () => {
+  it('should be called with correct params when no announcements', () => {
+    const nineOfHearts = createCard(CardSuit.Hearts, CardSymbol.Nine);
+    const jackOfHearts = createCard(CardSuit.Hearts, CardSymbol.Jack);
+    const aceOfHears = createCard(CardSuit.Hearts, CardSymbol.Ace);
+
+    const onTrickDone = jest.fn(() => null);
+
+    runTrick({
+      deck: [],
+      first: createPlayerMock({
+        name: 'A',
+        playTrick: (cards) => cards[0],
+        cards: [nineOfHearts],
+        onTrickDone,
+      }),
+      second: createPlayerMock({
+        name: 'B',
+        playTrick: (cards) => cards[0],
+        cards: [jackOfHearts],
+        onTrickDone,
+      }),
+      gameMode: GameMode.Normal,
+      trump: aceOfHears,
+      closeGame: () => null,
+      goOut: () => null,
+    });
+
+    expect(onTrickDone).toHaveBeenCalledTimes(2);
+    expect(onTrickDone).toHaveBeenCalledWith({
+      anouncements: [],
+      firstPlayerCard: nineOfHearts,
+      secondPlayerCard: jackOfHearts,
+      trump: aceOfHears,
+      gameMode: GameMode.Normal,
+      trickPoints: 2, // 9 + J = 2
+      winnerName: 'B',
+    });
+  });
+
+  it('should allow swapping nine of trumps and marriage announcement', () => {
+    const trump = createCard(CardSuit.Hearts, CardSymbol.Queen);
+
+    const deck = [
+      createCard(CardSuit.Clubs, CardSymbol.Ace),
+      createCard(CardSuit.Clubs, CardSymbol.Ace),
+      createCard(CardSuit.Clubs, CardSymbol.Ace),
+      trump,
+    ];
+
+    const kingOfHears = createCard(CardSuit.Hearts, CardSymbol.King);
+    const jackOfHearts = createCard(CardSuit.Hearts, CardSymbol.Jack);
+
+    const onTrickDone = jest.fn(() => null);
+
+    runTrick({
+      deck,
+      first: createPlayerMock({
+        name: 'A',
+        playTrick: (cards) => cards[0],
+        cards: [createCard(CardSuit.Hearts, CardSymbol.Nine), kingOfHears],
+        announceNineOfTrumps: () => true,
+        announceMarriage: () => true,
+        hasWonTrick: true,
+        onTrickDone,
+      }),
+      second: createPlayerMock({
+        name: 'B',
+        playTrick: (cards) => cards[0],
+        cards: [jackOfHearts],
+      }),
+      gameMode: GameMode.Normal,
+      trump: trump,
+      closeGame: () => null,
+      goOut: () => null,
+    });
+
+    expect(onTrickDone).toHaveBeenCalledWith({
+      anouncements: [AnnoucementType.NineOfTrumps, AnnoucementType.Marriage],
+      firstPlayerCard: kingOfHears,
+      secondPlayerCard: jackOfHearts,
+      trump,
+      gameMode: GameMode.Normal,
+      trickPoints: 6, // K + J = 6
+      winnerName: 'A',
+    });
   });
 });
 

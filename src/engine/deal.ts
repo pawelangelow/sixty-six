@@ -150,10 +150,15 @@ export const determineWinner = ({
   if (whoIsGoingOut) {
     const oponent = whoIsGoingOut === a ? b : a;
 
+    debug(`Going out initiated by ${whoIsGoingOut.name}`);
     if (whoIsGoingOut.points >= WINNING_POINTS) {
+      debug(`Going out by ${whoIsGoingOut.name}: Success!`);
       return { winner: whoIsGoingOut, points: calculateDealPoints(oponent) };
     }
 
+    debug(
+      `Going out by ${whoIsGoingOut.name}: Fail! Points for ${oponent.name}`,
+    );
     return { winner: oponent, points: calculateDealPoints(whoIsGoingOut) };
   }
 

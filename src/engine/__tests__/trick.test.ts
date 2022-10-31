@@ -586,4 +586,69 @@ describe('Security', () => {
       }),
     );
   });
+
+  it('players cant change their cards & trick context on closeTheGame()', () => {
+    const hackersCloseTheGame = (cards, context) => {
+      cards.unshift(createCard(CardSuit.Hearts, CardSymbol.Ace));
+      cards.unshift(createCard(CardSuit.Hearts, CardSymbol.Ten));
+      context.gameMode = GameMode.Closed;
+      context.trump = createCard(CardSuit.Clubs, CardSymbol.Ace);
+      context.deck = [
+        createCard(CardSuit.Clubs, CardSymbol.Ace),
+        createCard(CardSuit.Clubs, CardSymbol.Ace),
+      ];
+      return true;
+    };
+
+    const secondPlayerPlayTrick = jest.fn((cards) => cards[0]);
+    const correctTrump = createCard(CardSuit.Hearts, CardSymbol.Ace);
+    const correctSecondPlayerHand = [
+      createCard(CardSuit.Hearts, CardSymbol.Jack),
+    ];
+    const correctDeck = [
+      createCard(CardSuit.Diamonds, CardSymbol.Nine),
+      createCard(CardSuit.Diamonds, CardSymbol.Jack),
+      createCard(CardSuit.Diamonds, CardSymbol.King),
+      createCard(CardSuit.Diamonds, CardSymbol.Queen),
+      createCard(CardSuit.Diamonds, CardSymbol.Ten),
+    ];
+    const correctOponentCard = createCard(CardSuit.Hearts, CardSymbol.King);
+
+    let gameMode = GameMode.Normal;
+    const closeGame = () => {
+      gameMode = GameMode.Closed;
+    };
+
+    runTrick({
+      deck: correctDeck,
+      first: createPlayerMock({
+        name: 'A',
+        playTrick: (cards) => cards[0],
+        cards: [correctOponentCard],
+        hasWonTrick: true,
+        closeTheGame: hackersCloseTheGame,
+      }),
+      second: createPlayerMock({
+        name: 'B',
+        playTrick: secondPlayerPlayTrick,
+        cards: correctSecondPlayerHand,
+      }),
+      gameMode: GameMode.Normal,
+      trump: correctTrump,
+      closeGame,
+      goOut: () => null,
+    });
+
+    expect(gameMode).toEqual(GameMode.Closed);
+
+    expect(secondPlayerPlayTrick).toHaveBeenCalledWith(
+      correctSecondPlayerHand,
+      expect.objectContaining({
+        deck: correctDeck,
+        trump: correctTrump,
+        oponentAnnouncements: null,
+        oponentCard: correctOponentCard,
+      }),
+    );
+  });
 });

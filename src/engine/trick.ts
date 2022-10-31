@@ -81,7 +81,7 @@ export const runTrick = ({
       // TODO: Notify player that this is forbidden
     }
 
-    isGameClosing = first.closeTheGame(first.cards, trickContext);
+    isGameClosing = first.closeTheGame([...first.cards], { ...trickContext });
 
     // The closing player can meld a marriage immediately before closing,
     // but no marriages can be melded in subsequent tricks.

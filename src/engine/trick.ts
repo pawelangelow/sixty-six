@@ -173,7 +173,7 @@ export const playCard = (player: Player, context: TrickContext): Card => {
   let attempts = 0;
 
   do {
-    const playersCard = player.playTrick([...player.cards], context);
+    const playersCard = player.playTrick([...player.cards], { ...context });
 
     attempts++;
     if (attempts === 10) {

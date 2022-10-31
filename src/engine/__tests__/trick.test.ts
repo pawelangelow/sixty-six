@@ -428,4 +428,50 @@ describe('Security', () => {
 
     expect(setup).toThrow('Cheating! Rules are not being followed!');
   });
+
+  it('players cant change the trick context', () => {
+    const hackersPlayTrick = (cards, context) => {
+      context.gameMode = GameMode.Closed;
+      context.trump = createCard(CardSuit.Clubs, CardSymbol.Ace);
+      context.deck = [
+        createCard(CardSuit.Clubs, CardSymbol.Ace),
+        createCard(CardSuit.Clubs, CardSymbol.Ace),
+      ];
+      return cards[0];
+    };
+
+    const secondPlayerPlayTrick = jest.fn((cards) => cards[0]);
+
+    const correctTrump = createCard(CardSuit.Hearts, CardSymbol.Ace);
+    const correctSecondPlayerHand = [
+      createCard(CardSuit.Hearts, CardSymbol.Jack),
+    ];
+
+    runTrick({
+      deck: [],
+      first: createPlayerMock({
+        name: 'A',
+        playTrick: hackersPlayTrick,
+        cards: [createCard(CardSuit.Hearts, CardSymbol.Nine)],
+      }),
+      second: createPlayerMock({
+        name: 'B',
+        playTrick: secondPlayerPlayTrick,
+        cards: correctSecondPlayerHand,
+      }),
+      gameMode: GameMode.Normal,
+      trump: correctTrump,
+      closeGame: () => null,
+      goOut: () => null,
+    });
+
+    expect(secondPlayerPlayTrick).toHaveBeenCalledWith(
+      correctSecondPlayerHand,
+      expect.objectContaining({
+        deck: [],
+        gameMode: GameMode.Normal,
+        trump: correctTrump,
+      }),
+    );
+  });
 });

@@ -72,7 +72,9 @@ export const runTrick = ({
       }
     }
 
-    isMarriageAnnounced = first.announceMarriage(first.cards, trickContext);
+    isMarriageAnnounced = first.announceMarriage([...first.cards], {
+      ...trickContext,
+    });
 
     if (gameMode === GameMode.Closed) {
       isMarriageAnnounced = false;

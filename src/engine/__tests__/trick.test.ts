@@ -530,4 +530,60 @@ describe('Security', () => {
       }),
     );
   });
+
+  it('players cant change their cards & trick context on announceMarriage()', () => {
+    const hackersAnnounceMarriage = (cards, context) => {
+      cards.unshift(createCard(CardSuit.Hearts, CardSymbol.Queen));
+      context.gameMode = GameMode.Closed;
+      context.trump = createCard(CardSuit.Clubs, CardSymbol.Ace);
+      context.deck = [
+        createCard(CardSuit.Clubs, CardSymbol.Ace),
+        createCard(CardSuit.Clubs, CardSymbol.Ace),
+      ];
+      return true;
+    };
+
+    const secondPlayerPlayTrick = jest.fn((cards) => cards[0]);
+    const correctTrump = createCard(CardSuit.Hearts, CardSymbol.Ace);
+    const correctSecondPlayerHand = [
+      createCard(CardSuit.Hearts, CardSymbol.Jack),
+    ];
+    const correctDeck = [
+      createCard(CardSuit.Diamonds, CardSymbol.Nine),
+      createCard(CardSuit.Diamonds, CardSymbol.Jack),
+      createCard(CardSuit.Diamonds, CardSymbol.King),
+      createCard(CardSuit.Diamonds, CardSymbol.Queen),
+      createCard(CardSuit.Diamonds, CardSymbol.Ten),
+    ];
+
+    runTrick({
+      deck: correctDeck,
+      first: createPlayerMock({
+        name: 'A',
+        playTrick: (cards) => cards[0],
+        announceMarriage: hackersAnnounceMarriage,
+        cards: [createCard(CardSuit.Hearts, CardSymbol.King)],
+        hasWonTrick: true,
+      }),
+      second: createPlayerMock({
+        name: 'B',
+        playTrick: secondPlayerPlayTrick,
+        cards: correctSecondPlayerHand,
+      }),
+      gameMode: GameMode.Normal,
+      trump: correctTrump,
+      closeGame: () => null,
+      goOut: () => null,
+    });
+
+    expect(secondPlayerPlayTrick).toHaveBeenCalledWith(
+      correctSecondPlayerHand,
+      expect.objectContaining({
+        deck: correctDeck,
+        gameMode: GameMode.Normal,
+        trump: correctTrump,
+        oponentAnnouncements: null,
+      }),
+    );
+  });
 });

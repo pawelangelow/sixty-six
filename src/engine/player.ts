@@ -19,7 +19,7 @@ export interface TrickContext {
 }
 
 export interface TrickCompletedResult {
-  anouncements: Annoucement[];
+  announcements: Annoucement[];
   gameMode: GameMode;
   trump: Card;
   firstPlayerCard: Card;

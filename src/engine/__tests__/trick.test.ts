@@ -76,7 +76,7 @@ describe('onTrickDone()', () => {
 
     expect(onTrickDone).toHaveBeenCalledTimes(2);
     expect(onTrickDone).toHaveBeenCalledWith({
-      anouncements: [],
+      announcements: [],
       firstPlayerCard: nineOfHearts,
       secondPlayerCard: jackOfHearts,
       trump: aceOfHears,
@@ -124,7 +124,7 @@ describe('onTrickDone()', () => {
     });
 
     expect(onTrickDone).toHaveBeenCalledWith({
-      anouncements: [AnnoucementType.NineOfTrumps, AnnoucementType.Marriage],
+      announcements: [AnnoucementType.NineOfTrumps, AnnoucementType.Marriage],
       firstPlayerCard: kingOfHears,
       secondPlayerCard: jackOfHearts,
       trump,

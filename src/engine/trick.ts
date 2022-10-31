@@ -146,7 +146,7 @@ export const runTrick = ({
     firstPlayerCard: firstCard,
     secondPlayerCard: secondCard,
     gameMode: trickContext.gameMode,
-    anouncements: oponentAnnouncements,
+    announcements: oponentAnnouncements,
     trickPoints: points,
     trump: trickContext.trump,
     winnerName: winner.name,

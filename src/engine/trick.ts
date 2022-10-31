@@ -46,13 +46,30 @@ export const runTrick = ({
 
   if (first.hasWonTrick) {
     const isAnnouncingNineOfTrumps = first.announceNineOfTrumps(
-      first.cards,
-      trickContext,
+      [...first.cards],
+      {
+        ...trickContext,
+      },
     );
 
     if (isAnnouncingNineOfTrumps) {
-      swapNineOfTrumps({ player: first, deck, trump });
-      oponentAnnouncements.push(AnnoucementType.NineOfTrumps);
+      try {
+        debug('Init swap Nine of Trumps');
+
+        validateNineOfTrumps({
+          hand: first.cards,
+          trump,
+          deck,
+        });
+
+        debug('Swapping 9 for other card. Trump: ', trump.toString());
+        debug(`Players hand before: ${first.cards.join(', ')}`);
+
+        swapNineOfTrumps({ player: first, deck, trump });
+        oponentAnnouncements.push(AnnoucementType.NineOfTrumps);
+      } catch (err) {
+        debug('Error', err);
+      }
     }
 
     isMarriageAnnounced = first.announceMarriage(first.cards, trickContext);
@@ -140,32 +157,17 @@ export const runTrick = ({
 };
 
 const swapNineOfTrumps = ({ player, deck, trump }) => {
-  try {
-    debug('Init swap Nine of Trumps');
+  const exchangedTrump = deck.pop();
+  const nineOfTrumps = player.cards.find(
+    (card) => card.symbol === CardSymbol.Nine && card.suit === trump.suit,
+  );
+  player.cards = player.cards.filter(
+    (card) => !(card.symbol === CardSymbol.Nine && card.suit === trump.suit),
+  );
+  player.cards.push(exchangedTrump);
 
-    validateNineOfTrumps({
-      hand: player.cards,
-      trump,
-      deck,
-    });
-
-    debug('Swapping 9 for other card. Trump: ', trump.toString());
-    debug(`Players hand before: ${player.cards.join(', ')}`);
-
-    const exchangedTrump = deck.pop();
-    const nineOfTrumps = player.cards.find(
-      (card) => card.symbol === CardSymbol.Nine && card.suit === trump.suit,
-    );
-    player.cards = player.cards.filter(
-      (card) => !(card.symbol === CardSymbol.Nine && card.suit === trump.suit),
-    );
-    player.cards.push(exchangedTrump);
-
-    debug(`Players hand after: ${player.cards.join(', ')}`);
-    deck.push(nineOfTrumps);
-  } catch (err) {
-    debug('Error', err);
-  }
+  debug(`Players hand after: ${player.cards.join(', ')}`);
+  deck.push(nineOfTrumps);
 };
 
 export const playCard = (player: Player, context: TrickContext): Card => {

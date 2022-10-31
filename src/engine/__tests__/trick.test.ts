@@ -398,3 +398,34 @@ describe('Trick calculation', () => {
     });
   });
 });
+
+describe('Security', () => {
+  it('players cant change their cards', () => {
+    const hackersPlayTrick = (cards) => {
+      cards.unshift(createCard(CardSuit.Hearts, CardSymbol.Ace));
+      return cards[0];
+    };
+
+    const setup = () => {
+      runTrick({
+        deck: [],
+        first: createPlayerMock({
+          name: 'A',
+          playTrick: hackersPlayTrick,
+          cards: [createCard(CardSuit.Hearts, CardSymbol.Nine)],
+        }),
+        second: createPlayerMock({
+          name: 'B',
+          playTrick: (cards) => cards[0],
+          cards: [createCard(CardSuit.Hearts, CardSymbol.Jack)],
+        }),
+        gameMode: GameMode.Normal,
+        trump: createCard(CardSuit.Hearts, CardSymbol.Ace),
+        closeGame: () => null,
+        goOut: () => null,
+      });
+    };
+
+    expect(setup).toThrow('Cheating! Rules are not being followed!');
+  });
+});
